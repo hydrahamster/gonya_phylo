@@ -1,18 +1,17 @@
 %Extract KOG* ogether as .fasta file, upload to server
 
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa KOG*.hmm KOG*.fa > KOG*.aln.fa
+KOGID=$1
+
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa KOG$KOGID.hmm KOG$KOGID.fa > KOG$KOGID.aln.fa
 
 %Back to desktop
 
-java -jar readseq.jar -f17 KOG*.aln.fa
+java -jar readseq.jar -f17 KOG$KOGID.aln.fa
 
 %Get rid of lower case letters in alignment, here replacing 'doesn't seem to interfere with beast 2
 
-sed -i -e 's/a/-/g' KOG*.nex 
-
-%Do that for the entire alphabet (script to just run)
+sed -i -e s/[a-z]/-/g KOG$KOGID.aln.fa.nex 
 
 %import into beast 2
 
----> Ok there is so much stuff missing. Like where is the java thingy? And doesn't it get turned into .nexus in a different way?
 

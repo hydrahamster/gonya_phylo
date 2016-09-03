@@ -1,21 +1,23 @@
 ---> idea for making this easier, at the moment the KOGs are separated manually which will be a pain in the arse
 
+KOGID=$1
+
 %export all CEGMA files together
 
-cat pre-KOG-all.fasta | tr -d "?" > KOG-all.fasta 
+cat pre-KOG-all.fasta | tr -d "?" > all-KOG.fasta 
 
 %scp library file
 
 %search and output names of hits into table
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout KOG*.tbl KOG*.hmm KOG-all.fasta
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout KOG$KOGID.tbl KOG$KOGID.hmm all-KOG.fasta
 
 %make index for input file
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index KOG*.fasta
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index all-KOGs.fasta
 
 %use table to extract sequences with hits
-grep -v "^#" KOG*.tbl | gawk '{print $1}' | /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f KOG-all.fasta - > KOG*-seq.fa
+grep -v "^#" KOG$KOGID.tbl | gawk '{print $1}' | /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f all-KOG.fasta - > KOG$KOGID-seq.fa
 
 % align extracted seqs to library file
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa KOG*.hmm KOG*-seq.fa > KOG*-seq.aln.fa
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa KOG$KOGID.hmm KOG$KOGID-seq.fa > KOG$KOGID-seq.aln.fa
 
 %then process to turn into .nexus file and feed into beast 2
