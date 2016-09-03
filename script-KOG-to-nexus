@@ -1,0 +1,13 @@
+%Extract KOG* ogether as .fasta file, upload to server
+
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa KOG*.hmm KOG*.fa > KS-global.aln.fa
+
+%Back to desktop, import alignemnt into Geneious, then export as .nexus file
+
+%Get rid of lower case letters in alignment, here replacing a with -
+
+sed -i -e 's/a/-/g' KOG*.nex %I think that's the one
+
+%Do that for the entire alphabet (script to just run)
+
+%import into beast 2
