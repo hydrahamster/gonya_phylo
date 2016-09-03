@@ -4,10 +4,13 @@
 
 %Back to desktop, import alignemnt into Geneious, then export as .nexus file
 
-%Get rid of lower case letters in alignment, here replacing a with -
+%Get rid of lower case letters in alignment, here replacing 'doesn't seem to interfere with beast 2
 
 sed -i -e 's/a/-/g' KOG*.nex %I think that's the one
 
 %Do that for the entire alphabet (script to just run)
 
 %import into beast 2
+
+---> Ok there is so much stuff missing. Like where is the java thingy? And doesn't it get turned into .nexus in a different way?
+
