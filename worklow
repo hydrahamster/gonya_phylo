@@ -1,0 +1,23 @@
+# Desktop: rm ? in KOG master file
+cat pre-KOG-all.fasta | tr -d "?" > all-KOG.fasta 
+
+# find which KOGs are in all transcriptomes
+countKOGs.sh
+   output: KOG_results.txt
+
+# HPCC: pull out contigs with KOG of interest, hmmalign 
+hmmsearch-align-KOGs.sh
+
+# Desktop: remove lower case ketters in alignemnts (unalligned to KOG)
+  sed -i -e s/[a-z]/-/g KOG$KOGID.aln.fa
+
+# remove *
+sed -i -e s/*/-/g KOG$KOGID.aln.fa
+
+
+# Desktop: Convert alignment to nexus file
+java -jar readseq.jar -f17 KOG$KOGID.aln.fa
+
+remove *
+
+
