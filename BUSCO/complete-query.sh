@@ -25,4 +25,4 @@ grep -v "^#" full_tables/full_table_BUSCO_* >> $INT_FILE1
 
 grep -i "complete" $INT_FILE1 >> $INT_FILE2
 
-awk '{print $1}' $OUTPUT_FILE
+awk '{print $1}' $INT_FILE2 >> $OUTPUT_FILE
