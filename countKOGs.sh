@@ -16,8 +16,8 @@ printf -v padded_i "%04g\n" $i
 
 # Get the number of lines that contain the KOG
 value=$(grep -c $padded_i all-KOG.fasta)
-# If that number is 15...
-if [ "$value" -eq "15" ]; then
+# If that number is 17...
+if [ "$value" -eq "17" ]; then
 	# Output just the KOG on a fresh line to our file
         printf "$padded_i" >> $OUTPUT_FILE
 fi
