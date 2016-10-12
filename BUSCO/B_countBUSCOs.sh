@@ -21,5 +21,3 @@ value=$(grep -c $i 3_complete_BUSCOs-17-colA.txt)
         echo "$i" >> $OUTPUT_FILE
 fi
 done
-
-
