@@ -16,6 +16,8 @@ reversetrim = file(params.revwerse)
 
 process cleanwork {
 
+beforeScript
+
 """
 sudo rm -rf work
 """
@@ -23,7 +25,7 @@ sudo rm -rf work
 }
 
 process fastqcfor {
-    publishDir 'output', mode: 'copy', overwrite: 'true'
+
 input:
 file freads from forward
 
@@ -34,7 +36,7 @@ java -jar /usr/bin/fastqc $freads
 }
 
 process fastqcrev {
-    publishDir 'output', mode: 'copy', overwrite: 'true'
+
 input:
 file rreads from reverse
 
@@ -71,11 +73,11 @@ java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar \
 
 
 process trinity {
-    publishDir 'output', mode: 'copy', overwrite: 'true'
+
 input:
 set file(r1),file(r2) from trimmedfq
 // if multiple libraries, need to combine in single left.fq and right.fq files
-// change trinity scripts to make work?
+
 output:
 file('${r1}-assembly.fasta') into asm
 
@@ -87,7 +89,7 @@ mv ${r1}-out-fuckoff-trinity/Trinity.fasta ${r1}-assembly.fasta
 
 
 process busco {
-    publishDir 'output', mode: 'copy', overwrite: 'true'
+
 input:
 set file('assembly') from asm
 
@@ -98,3 +100,12 @@ python /mnt/transient_nfs/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_
 }
 
 
+process saveoutput {
+
+"""
+mv /mnt/transient_nfs/transciptomes/work/*.html /mnt/transient_nfs/transciptomes/output
+mv /mnt/transient_nfs/transciptomes/work/*-assembly.fasta /mnt/transient_nfs/transciptomes/output
+mv -r /mnt/transient_nfs/transciptomes/work/*_BUSCO /mnt/transient_nfs/transciptomes/output
+"""
+
+}
