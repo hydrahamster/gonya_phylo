@@ -6,31 +6,44 @@
 params.forward = ""
 params.revwerse = ""
 
-/*
- *forward = file(params.forward)
- *reverse = file(params.revwerse)
- */
+
+forward = file(params.forward)
+reverse = file(params.revwerse)
+
 
 forwardtrim = file(params.forward)
 reversetrim = file(params.revwerse)
 
+process cleanwork {
 
-/*
- *process fastqcfor {
- *input:
- *file freads from forward
- *"""
- *java -jar /mnt/transient_nfs/programs/fastqc $freads
- *"""
- *}
- *process fastqcrev {
- *input:
- *file rreads from reverse
- *"""
- *java -jar /mnt/transient_nfs/programs/fastqc $rreads
- *"""
- *}
- */
+"""
+sudo rm -rf work
+"""
+
+}
+
+process fastqcfor {
+    publishDir 'output', mode: 'copy', overwrite: 'true'
+input:
+file freads from forward
+
+"""
+java -jar /usr/bin/fastqc $freads
+"""
+
+}
+
+process fastqcrev {
+    publishDir 'output', mode: 'copy', overwrite: 'true'
+input:
+file rreads from reverse
+
+"""
+java -jar /usr/bin/fastqc $rreads
+"""
+
+}
+
  
 process trimmomaticfor {
 
@@ -64,7 +77,7 @@ set file(r1),file(r2) from trimmedfq
 // if multiple libraries, need to combine in single left.fq and right.fq files
 // change trinity scripts to make work?
 output:
-file('*assembly.fasta') into asm
+file('${r1}-assembly.fasta') into asm
 
 """
 /mnt/transient_nfs/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left ${r1} --right ${r2} --max_memory 50G --CPU 10 --output ./${r1}-out-fuckoff-trinity
@@ -76,11 +89,12 @@ mv ${r1}-out-fuckoff-trinity/Trinity.fasta ${r1}-assembly.fasta
 process busco {
     publishDir 'output', mode: 'copy', overwrite: 'true'
 input:
-file(assembly) from asm
+set file('assembly') from asm
 
 """
 python /mnt/transient_nfs/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_BUSCO -l /mnt/transient_nfs/programs/busco/alveolata_stramenophiles_ensembl -m tran -c 10
 """
 
 }
+
 
