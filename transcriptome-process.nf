@@ -7,37 +7,36 @@
 params.forward = ""
 params.revwerse = ""
 
-/*
- *forward = file(params.forward)
- *reverse = file(params.revwerse)
- */
+
+forward = file(params.forward)
+reverse = file(params.revwerse)
+
 
 forwardtrim = file(params.forward)
 reversetrim = file(params.revwerse)
 
-/* error about incorrect fastqc version
- *process fastqcfor {
- *	publishDir 'output', mode: 'copy', overwrite: 'true'
- *input:
- *file freads from forward
- *
- *"""
- *java -jar /usr/bin/fastqc ${freads}
- *"""
- *
- *}
- *
- *process fastqcrev {
- *	publishDir 'output', mode: 'copy', overwrite: 'true'
- *input:
- *file rreads from reverse
- *
- *"""
- *java -jar /usr/bin/fastqc ${rreads}
- *"""
- *
- *}
- */
+
+process fastqcfor {
+	publishDir 'output', mode: 'copy', overwrite: 'true'
+input:
+file freads from forward
+
+"""
+fastqc ${freads}
+"""
+
+}
+
+process fastqcrev {
+	publishDir 'output', mode: 'copy', overwrite: 'true'
+input:
+file rreads from reverse
+
+"""
+fastqc ${rreads}
+"""
+
+}
  
 process trimmomaticfor {
 
