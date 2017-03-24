@@ -17,24 +17,36 @@ reversetrim = file(params.revwerse)
 
 
 process fastqcfor {
-	publishDir 'output', mode: 'copy', overwrite: 'true'
+    publishDir 'output', mode: 'copy', overwrite: 'true'
 input:
 file freads from forward
 
+output:
+file("${freads}_fastqc.html") into freadsfstcq 
+
 """
 fastqc ${freads}
+mv ${freads}_fastqc/fastqc_report.html ${freads}_fastqc.html
 """
+
+freadsfstcq.subscribe { println $it }
 
 }
 
 process fastqcrev {
-	publishDir 'output', mode: 'copy', overwrite: 'true'
+    publishDir 'output', mode: 'copy', overwrite: 'true'
 input:
 file rreads from reverse
 
+output:
+file("${rreads}_fastqc.html") into rreadsfstcq 
+
 """
 fastqc ${rreads}
+mv ${rreads}_fastqc/fastqc_report.html ${rreads}_fastqc.html
 """
+
+rreadsfstcq.subscribe { println $it }
 
 }
  
@@ -45,8 +57,6 @@ file freads from forwardtrim
 file rreads from reversetrim
 
 output: 
-// should be the par end thing for next process.. also can I change output file names?
-// $splitname  as part of naming output?
 // own seq change to -phred33 and MINLEN: depending on insert size
 set file('*.forward_paired.fq.gz'),file('*.reverse_paired.fq.gz') into trimmedfq
 
@@ -64,26 +74,33 @@ java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar \
 
 
 process trinity {
-	publishDir 'output', mode: 'copy', overwrite: 'true'
+    publishDir 'output', mode: 'copy', overwrite: 'true'
 input:
 set file(r1),file(r2) from trimmedfq
 // if multiple libraries, need to combine in single left.fq and right.fq files
 
 output:
-file('${r1}-assembly.fasta') into asm
+file("${r1}-assembly.fasta") into asm
 
 """
 /mnt/transient_nfs/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left ${r1} --right ${r2} --max_memory 50G --CPU 10 --output ./${r1}-out-fuckoff-trinity
 mv ${r1}-out-fuckoff-trinity/Trinity.fasta ${r1}-assembly.fasta
 """
+// is this move fucking up the asm channel?
+asm.subscribe { println $it }
+
 }
 
 
 process busco {
-	publishDir 'output', mode: 'copy', overwrite: 'true'
+    publishDir 'output', mode: 'copy', overwrite: 'true'
 input:
-file('assembly') from asm
+file assembly from asm
 
+output:
+file("full_table_*")
+file("short_summary_*")
+//since asm was put into output, is it going toscrew the directory that BUSCO is looking in?
 """
 python /mnt/transient_nfs/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_BUSCO -l /mnt/transient_nfs/programs/busco/alveolata_stramenophiles_ensembl -m tran -c 10
 """
