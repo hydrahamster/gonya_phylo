@@ -26,12 +26,12 @@ file("${freads}_fastqc.html") into freadsfstcq
 
 """
 fastqc ${freads}
-mv ${freads}_fastqc/fastqc_report.html ${freads}_fastqc.html
+mv *_fastqc/fastqc_report.html ${freads}_fastqc.html
 """
 
-//freadsfstcq.subscribe { println $it }
-
 }
+
+//freadsfstcq.subscribe { println $it }
 
 process fastqcrev {
     publishDir 'output', mode: 'copy', overwrite: 'true'
@@ -43,12 +43,12 @@ file("${rreads}_fastqc.html") into rreadsfstcq
 
 """
 fastqc ${rreads}
-mv ${rreads}_fastqc/fastqc_report.html ${rreads}_fastqc.html
+mv *_fastqc/fastqc_report.html ${rreads}_fastqc.html
 """
 
-//rreadsfstcq.subscribe { println $it }
-
 }
+
+//rreadsfstcq.subscribe { println $it }
  
 process trimmomaticfor {
 
@@ -87,10 +87,10 @@ file("${r1}-assembly.fasta") into asm
 mv ${r1}-out-fuckoff-trinity/Trinity.fasta ${r1}-assembly.fasta
 """
 // is this move fucking up the asm channel?
-//asm.subscribe { println $it }
 
 }
 
+//asm.subscribe { println $it }
 
 process busco {
     publishDir 'output', mode: 'copy', overwrite: 'true'
