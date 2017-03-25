@@ -98,8 +98,8 @@ input:
 file assembly from asm
 
 output:
-file("full_table_*")
-file("short_summary_*")
+file("full_table_*") into buscend
+file("short_summary_*") into buscend
 //since asm was put into output, is it going toscrew the directory that BUSCO is looking in?
 """
 python /mnt/transient_nfs/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_BUSCO -l /mnt/transient_nfs/programs/busco/alveolata_stramenophiles_ensembl -m tran -c 10

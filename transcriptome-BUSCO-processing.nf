@@ -1,45 +1,193 @@
 #!/usr/bin/env nextflow
 
+
+/*
+ *Work out which complete BUSCOs are in each transcriptome asm
+ */
 process completequery {
 
 input
 
 output
 
+"""
+#!/bin/bash
+
+INT_FILE1=1_BUSCO_full-table.txt
+
+# Remove our old file
+rm $INT_FILE1
+# 'Touch' the file to ensure it's blank
+touch $INT_FILE1
+
+INT_FILE2=2_BUSCOs.txt
+
+# Remove our old file
+rm $INT_FILE2
+# 'Touch' the file to ensure it's blank
+touch $INT_FILE2
+
+OUTPUT_FILE=3_BUSCOs-colA.txt
+
+# Remove our old file
+rm $OUTPUT_FILE
+# 'Touch' the file to ensure it's blank
+touch $OUTPUT_FILE
+
+grep -v "^#" run_*/full_table_* >> $INT_FILE1
+
+grep -i "Complete" $INT_FILE1 >> $INT_FILE2
+
+grep -i "Fragmented" $INT_FILE1 >> $INT_FILE2
+
+awk '{print $1}' $INT_FILE2 >> $OUTPUT_FILE
+"""
+
 }
 
+
+/*
+ *Count how many single complete/frag BUSCOs are common across the transcriptomes
+ */
 process countBUSCO {
 
 input
 
 output
 
+"""
+#!/bin/bash
+
+OUTPUT_FILE=444_BUSCO_complete-count.txt
+
+# Remove our old file
+rm $OUTPUT_FILE
+# 'Touch' the file to ensure it's blank
+touch $OUTPUT_FILE
+
+# Iterate between 1 and 120109
+for ((i=1;i<=120109;i++));
+do
+
+#printf -v $i
+
+# Get the number of lines that contain the BUSCO ID
+value=$(grep -c $i 333_complete_BUSCOs-14-colA.txt)
+# If that number is 1...
+ if [ "$value" -eq "14" ]; then
+	# Output just the KOG on a fresh line to our file
+        echo "$i" >> $OUTPUT_FILE
+fi
+done
+"""
+
 }
 
+/*
+ * Verify that the BUSCOs aren't duplicated
+ */
 process verifyunique {
 
 input
 
 output
 
+"""
+#!/bin/bash
+
+OUTPUT_FILE=555_BUSCO_unique-single-count.txt
+
+# Remove our old file
+rm $OUTPUT_FILE
+# 'Touch' the file to ensure it's blank
+touch $OUTPUT_FILE
+
+#set ID from file .txt, line by line
+ID=$()
+
+while read p; do
+	value=$(find . | grep hmm$ | grep euk$p.hmm | wc -l)
+	if [ "$value" -eq "1" ]; then
+	# Output just the BUSCO ID on a fresh line to our file
+        echo "$p" >> $OUTPUT_FILE
+	fi
+done <444_BUSCO_complete-count.txt
+"""
+
 }
 
+/*
+ *
+ */
 process IDtofasta {
 
 input
 
 output
 
+"""
+#!/usr/bin/env python
+
+import sys
+import os
+
+#argv[2] is 555_BUSCO_unique-single-count.txt
+goodfile = open(sys.argv[2])
+goodids = {}
+for line in goodfile:
+    goodids[line.rstrip("\n")]=1
+
+#argv[1] is 14trans_complete_BUSCOs-plus-frag-carib.txt
+buscofile = open(sys.argv[1])
+for line in buscofile:
+    l = line.split()
+    buscoid = l[0].split(":")[1] #BUSCO
+    contigid = l[2] #MMETSP
+    if buscoid in goodids:
+        contigfile = "translated_proteins/" + contigid + "_ts.fas"
+        if not os.path.isfile(contigfile):
+        	continue
+        cat_cmd = "cat " + contigfile + " >> " + buscoid + ".fasta"
+        print cat_cmd
+        os.system(cat_cmd)
+        print buscoid + "\t" + contigid
+"""
 }
 
+/*
+ *
+ */
 process hmmsearchalign {
 
 input
 
 output
 
+"""
+#!/bin/bash
+
+BUSCOID=$1
+
+#remove previously built reference
+#rm all15incl-caribaeus-6xORfs.fasta.ssi
+
+# search and output names of hits into table
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout BUSCOeuk$BUSCOID.tbl hmmer_profiles/BUSCOeuk$BUSCOID.hmm $BUSCOID.fasta
+
+# make index for input file
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index $BUSCOID.fasta
+
+# use table to extract sequences with hits
+grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f $BUSCOID.fasta - > BUSCOeuk$BUSCOID-seq.fa
+
+# align extracted seqs to library file
+/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa hmmer_profiles/BUSCOeuk$BUSCOID.hmm BUSCOeuk$BUSCOID-seq.fa > BUSCOeuk$BUSCOID.aln.fa
+"""
 }
 
+/*
+ *
+ */
 process characterchange {
 
 input
@@ -73,8 +221,11 @@ sed -i -e s/*/-/g *.aln.fa
 
 }
 
+/*
+ *
+ *may need to find a better way to make readseq work, wildcard may not work 
+ */
 process convertnexus {
-// may need to find a better way to make readseq work, wildcard may not work
 
 input
 
