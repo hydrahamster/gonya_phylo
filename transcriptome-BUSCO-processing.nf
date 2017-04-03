@@ -47,7 +47,7 @@ awk '{print $1}' $INT_FILE2 >> $OUTPUT_FILE
 
 
 /*
- *Count how many single complete/frag BUSCOs are common across the transcriptomes
+ *Count how many single complete/frag BUSCOs are common across the transcriptomes - 
  */
 process countBUSCO {
 
