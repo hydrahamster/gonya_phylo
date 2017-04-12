@@ -9,8 +9,8 @@ with open('BUSCOs-unique-single.tsv', 'w') as prod:
 			colA = line.split("\t")[0] #just use first column to process
 			colAnz = colA[5:] #remove letters at start of BUSCO ID
 			colAn = colAnz.rstrip("0") #remove leading zeroes
-			colF = line.split("\t")[5] #check unique rep per transcriptome later
-			iterations = range(740000041381) #will this fuck up with two x 0 before start 
+			#colF = line.split("\t")[5] #check unique rep per transcriptome later # not working
+			iterations = range(50000000133, 740000041382) #memory error
 			for i in iterations: #cycle through all iterations
 				hit = colAn.find(i)
 				if hit ==2: #how to specify that it needs to be found 2ce?
