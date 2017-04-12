@@ -1,53 +1,48 @@
 #!/usr/bin/env nextflow
 
 
+params.fulltable = "/mnt/transient_nfs/transciptomes/output/full_table_*"
+params.hmmerlib = "/mnt/transient_nfs/programs/busco/protists_ensembl/hmms"
+
+fulltable = file(params.fulltable)
+hmmerlib = file(params.hmmerlib
+
 /*
  *Work out which complete BUSCOs are in each transcriptome asm
+ *Make directory wirh all full tables to work im rather than searching sub directories
  */
 process completequery {
 
 input
+file fulltable
 
 output
+file BUSCOs-complete-frag.tsv
 
 """
-#!/bin/bash
-
-INT_FILE1=1_BUSCO_full-table.txt
-
-# Remove our old file
-rm $INT_FILE1
-# 'Touch' the file to ensure it's blank
-touch $INT_FILE1
-
-INT_FILE2=2_BUSCOs.txt
-
-# Remove our old file
-rm $INT_FILE2
-# 'Touch' the file to ensure it's blank
-touch $INT_FILE2
-
-OUTPUT_FILE=3_BUSCOs-colA.txt
-
-# Remove our old file
-rm $OUTPUT_FILE
-# 'Touch' the file to ensure it's blank
-touch $OUTPUT_FILE
-
-grep -v "^#" run_*/full_table_* >> $INT_FILE1
-
-grep -i "Complete" $INT_FILE1 >> $INT_FILE2
-
-grep -i "Fragmented" $INT_FILE1 >> $INT_FILE2
-
-awk '{print $1}' $INT_FILE2 >> $OUTPUT_FILE
+#!/usr/bin/env python
+# need to match input with nextflow to python
+import os,sys,glob
+from glob import glob
+with open('BUSCOs-complete-frag.tsv', 'w') as out:
+    for file in glob('full_table_*'):
+	sfile = file.split("_")[3]
+        with open(file, 'r') as f:
+            for line in f:
+                if 'Complete' in line or 'Fragmented' in line:
+			out.write(line.strip())
+			out.write("\t")
+			out.write(sfile)
+			out.write("\n")
+                    # same as out.write("%s, %s\n" % (line.strip(), sfile))
 """
 
 }
 
 
 /*
- *Count how many single complete/frag BUSCOs are common across the transcriptomes - 
+ *Count how many single complete/frag BUSCOs are common across the transcriptomes
+ * Potential problem in the number search: 740000041381 is preceeded by 00
  */
 process countBUSCO {
 
@@ -65,8 +60,8 @@ rm $OUTPUT_FILE
 # 'Touch' the file to ensure it's blank
 touch $OUTPUT_FILE
 
-# Iterate between 1 and 120109
-for ((i=1;i<=120109;i++));
+# Iterate between 1 and 740000041381
+for ((i=1;i<=740000041381;i++));
 do
 
 #printf -v $i
