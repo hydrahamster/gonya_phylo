@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os,sys
+import os,sys,pandas
 
 with open('BUSCOs-unique-single.tsv', 'w') as prod:
 	sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
@@ -15,6 +15,12 @@ with open('BUSCOs-unique-single.tsv', 'w') as prod:
 				hit = colAn.find(i)
 				if hit ==2: #how to specify that it needs to be found 2ce?
 					prod.write(line) #write whole line into prod file
+
+# how about making all the first columns of transcriptomes into sets then checking for commonly represented entities
+$transcr1IDhits = set([colA of that transcriptome])
+$transcr2IDhits = set([colA of that transcriptome])
+print($transcr1IDhits & $transcr2IDhits) # prints only common IDs
+commonIDs = $transcr1IDhits & $transcr2IDhits #new variable only with the common elements
 
 # Iterate between 1 and 740000041381
 #for ((i=1;i<=740000041381;i++));
