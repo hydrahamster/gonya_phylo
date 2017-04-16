@@ -9,12 +9,17 @@ import os,sys,pandas, glob
 #		with open('$colA.csv', 'w') as prod: #do I need the $ here?
 			#from pandas import DataFrame
 from glob import glob
-for file in glob('*_query.tsv'):
+for file in glob('*_query.tsv'): #input all 30 datasets
 	sources = file
-	colnames = ['a', 'b', 'c', 'd', 'e', 'f']
-	df = pandas.read_csv(sources, sep='\t', names=colnames)
-	colA = df.a.tolist()
-	print colA
+	colnames = ['a', 'b', 'c', 'd', 'e', 'f'] 
+	df = pandas.read_csv(sources, sep='\t', names=colnames) #colnames headers for df contruction
+	colA = df.a.tolist() #turn column a, protein IDs, into list
+	IDs = set(colA) #turn lists into sets
+#rather than turning just into a set of sets, turn into list of sets and then query?
+	#common = pandas.merge(*IDs) #error of too many entries
+	#common = IDs.intersection()
+	print colA	
+#	print IDs
 
 			
 
