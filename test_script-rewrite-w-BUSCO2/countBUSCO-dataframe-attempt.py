@@ -17,8 +17,8 @@ for file in glob('*_query.tsv'): #input all 30 datasets
 	IDs = set(colA) #turn lists into sets
 #rather than turning just into a set of sets, turn into list of sets and then query?
 	#common = pandas.merge(*IDs) #error of too many entries
-	#common = IDs.intersection()
-	print colA	
+	common = set.intersection(*IDs)
+	print common	
 #	print IDs
 
 			
