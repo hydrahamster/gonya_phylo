@@ -11,11 +11,11 @@ with open('BUSCOs-unique-single.tsv', 'w') as prod:
 	IDdict = defaultdict(int) #dictionatry type makes new key with entry 0 if not present yet an entry
 	for thing in IDlist: #cycle though entries in ID list
 		IDdict[thing] += 1 #+1 to value of the corresponding key from list
-	for entry in IDdict:
-		if IDdict.get(entry) == 2:
+	for entry in IDdict: #cycle through each key
+		if IDdict.get(entry) == 2: #if value for each key is the same as transcriptomes queried
 #			prod.write(line.strip())
 			prod.write(entry)
-			prod.write("\n")
+			prod.write("\n") #next entry on new line
 
 #print IDdict.keys()[IDdict.values().index(2)]	
 

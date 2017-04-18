@@ -9,7 +9,8 @@ hmmerlib = file(params.hmmerlib
 
 /*
  *Work out which complete BUSCOs are in each transcriptome asm
- *Make directory wirh all full tables to work im rather than searching sub directories
+ *Make directory wirh all full tables to work im rather than searching sub directories OR change path in script to folder
+ *input/output should be correct in script
  */
 process completequery {
 
@@ -21,11 +22,11 @@ file("BUSCOs-complete-frag.tsv") into compq
 
 """
 #!/usr/bin/env python
-# need to match input with nextflow to python
+
 import os,sys,glob
 from glob import glob
 with open('BUSCOs-complete-frag.tsv', 'w') as out:
-    for file in glob('$fulltable'):
+    for file in glob(${fulltable}):
 	sfile = file.split("_")[3]
         with open(file, 'r') as f:
             for line in f:
@@ -34,7 +35,6 @@ with open('BUSCOs-complete-frag.tsv', 'w') as out:
 			out.write("\t")
 			out.write(sfile)
 			out.write("\n")
-                    # same as out.write("%s, %s\n" % (line.strip(), sfile))
 """
 
 }
@@ -42,7 +42,7 @@ with open('BUSCOs-complete-frag.tsv', 'w') as out:
 
 /*
  *Count how many single complete/frag BUSCOs are common across the transcriptomes
- * Potential problem in the number search: 740000041381 is preceeded by 00
+ *input/output should be correct in script
  */
 process countBUSCO {
 
@@ -50,64 +50,27 @@ input
 file BUSCOs-list from compq
 
 output
+file("BUSCOs-unique-single.tsv") into uniquelist
 
 """
-#!/bin/bash
+#!/usr/bin/env python
 
-OUTPUT_FILE=444_BUSCO_complete-count.txt
+import os,sys,pandas, collections
+from collections import defaultdict
 
-# Remove our old file
-rm $OUTPUT_FILE
-# 'Touch' the file to ensure it's blank
-touch $OUTPUT_FILE
-
-# Iterate between 1 and 740000041381
-for ((i=1;i<=740000041381;i++));
-do
-
-#printf -v $i
-
-# Get the number of lines that contain the BUSCO ID
-value=$(grep -c $i 333_complete_BUSCOs-14-colA.txt)
-# If that number is 1...
- if [ "$value" -eq "14" ]; then
-	# Output just the KOG on a fresh line to our file
-        echo "$i" >> $OUTPUT_FILE
-fi
-done
-"""
-
-}
-
-/*
- * Verify that the BUSCOs aren't duplicated
- */
-process verifyunique {
-
-input
-
-output
-
-"""
-#!/bin/bash
-
-OUTPUT_FILE=555_BUSCO_unique-single-count.txt
-
-# Remove our old file
-rm $OUTPUT_FILE
-# 'Touch' the file to ensure it's blank
-touch $OUTPUT_FILE
-
-#set ID from file .txt, line by line
-ID=$()
-
-while read p; do
-	value=$(find . | grep hmm$ | grep euk$p.hmm | wc -l)
-	if [ "$value" -eq "1" ]; then
-	# Output just the BUSCO ID on a fresh line to our file
-        echo "$p" >> $OUTPUT_FILE
-	fi
-done <444_BUSCO_complete-count.txt
+with open('BUSCOs-unique-single.tsv', 'w') as prod:
+	sourcef = open(${BUSCOs-list}, 'r') #single ' or double " ?
+	colnames = ['a', 'b', 'c', 'd', 'e', 'f'] 
+	df = pandas.read_csv(sourcef, sep='\t', names=colnames) #colnames headers for df contruction
+	IDlist = df.a.tolist() #turn column a, protein IDs, into list
+	IDdict = defaultdict(int) #dictionatry type makes new key with entry 0 if not present yet an entry
+	for thing in IDlist: #cycle though entries in ID list
+		IDdict[thing] += 1 #+1 to value of the corresponding key from list
+	for entry in IDdict: #cycle through each key
+		if IDdict.get(entry) == 2: #if value for each key is the same as transcriptomes queried
+#			prod.write(line.strip())
+			prod.write(entry)
+			prod.write("\n") #next entry on new line
 """
 
 }
