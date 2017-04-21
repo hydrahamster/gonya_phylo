@@ -8,27 +8,36 @@ colnames = ['a']
 df = pandas.read_csv(uniqueids, sep='\t', names=colnames)
 goodids = df.a.tolist() #list of common BUSCO IDs
 masterfile = open('BUSCOs-complete-frag.tsv', 'r')
-mornames = ['a', 'b', 'c', 'd', 'e', 'f']
-df = pandas.read_csv(masterfile, sep='\t', names=mornames)
-buscoid = df.a.tolist()
-contigid = df.c.tolist()
+mornames = ['buscoid', 'b', 'contigid', 'd', 'e', 'sourcetrans']
+masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames)
+for thing in goodids:
+	with open(thing + '_info.csv', 'w') as infom:
+		mast = masterdata.loc[masterdata['buscoid'] == thing]
+#		fasta.write(masterdata.loc[masterdata['buscoid'] == thing])
+		print >> inform , mast
+#		print(masterdata.loc[masterdata['buscoid'] == thing])
+#		fasta.write(line)
+#buscoid = df.a.tolist()
+#contigid = df.c.tolist()
 #sourcetrans = df.f.tolist() #source of contig
-buscodict = zip(contigid , buscoid) #dictionary with contig as key and buscoID as value kk
-for thing in goodids: #somewhere reapeat loop has crept in
-	with open(thing +'.fasta', 'w') as fasta:
-		for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
-			proteingoop = file.split("/")[2] #^all trnaslated contig files kk
-			for entry in buscodict:
+#buscodict = zip(contigid , buscoid) #turns into list for some reason not dict
+#for thing in goodids: #CAUSING REPEAT LOOP
+#			for entry in buscodict:
 #				if buscodict.get(entry) == thing:
 #					ergh = buscodict.keys() #get key
 #			if thing in buscodict:
 #				get key and match to proteingoop
+
 #				append proteingoop to fasta
+#important for file search:
+#for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories //also CAUSING REPEAT LOOP
+#	proteingoop = file.split("/")[2] #^all trnaslated contig files kk
+#	print len(proteingoop)
+
 	#if goodid in buscodict value, find associated key
 	#use key to get associated proteingoop file
 	#append file contents to goodid.fasta
 
-					print buscodict
 #for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
 #	proteingoop = file #^all trnaslated contig files
 #	if goodids in buscodict: #if common BUSCO in value then
