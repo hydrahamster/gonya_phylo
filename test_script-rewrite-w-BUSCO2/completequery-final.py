@@ -7,9 +7,14 @@ with open('BUSCOs-complete-frag.tsv', 'w') as out:
 	sfile = file.split("_")[3]
         with open(file, 'r') as f:
             for line in f:
-                if 'Complete' in line or 'Fragmented' in line:
-			out.write(line.strip())
+		if 'Complete' in line or 'Fragmented' in line:
+			l = line.split("\t")
+			buscoid = l[0]
+			contigid = l[2]
+			out.write(buscoid.strip())
 			out.write("\t")
-			out.write(sfile)
+			out.write(contigid.strip())
+			out.write("\t")
+			out.write(sfile.strip())
 			out.write("\n")
 # same as out.write("%s, %s\n" % (line.strip(), sfile))

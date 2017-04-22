@@ -8,13 +8,13 @@ colnames = ['a']
 df = pandas.read_csv(uniqueids, sep='\t', names=colnames)
 goodids = df.a.tolist() #list of common BUSCO IDs
 masterfile = open('BUSCOs-complete-frag.tsv', 'r')
-mornames = ['buscoid', 'b', 'contigid', 'd', 'e', 'sourcetrans']
+mornames = ['buscoid', 'contigid', 'sourcetrans']
 masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames)
 for thing in goodids:
 	with open(thing + '_info.csv', 'w') as infom:
-		mast = masterdata.loc[masterdata['buscoid'] == thing]
+		mast = masterdata.loc[masterdata['buscoid'] == thing ]
 #		fasta.write(masterdata.loc[masterdata['buscoid'] == thing])
-		print >> inform , mast
+		print >> infom , mast 
 #		print(masterdata.loc[masterdata['buscoid'] == thing])
 #		fasta.write(line)
 #buscoid = df.a.tolist()

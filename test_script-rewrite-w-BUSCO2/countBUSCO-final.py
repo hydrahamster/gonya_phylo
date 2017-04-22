@@ -5,7 +5,7 @@ from collections import defaultdict
 
 with open('BUSCOs-unique-single.tsv', 'w') as prod:
 	sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
-	colnames = ['a', 'b', 'c', 'd', 'e', 'f'] 
+	colnames = ['a', 'b', 'c'] 
 	df = pandas.read_csv(sourcef, sep='\t', names=colnames) #colnames headers for df contruction
 	IDlist = df.a.tolist() #turn column a, protein IDs, into list
 	IDdict = defaultdict(int) #dictionatry type makes new key with entry 0 if not present yet an entry
