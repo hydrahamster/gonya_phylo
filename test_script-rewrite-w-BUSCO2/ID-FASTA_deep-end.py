@@ -1,20 +1,58 @@
 #!/usr/bin/env python
-import os,sys,pandas, glob, pandas, re
+import os,sys,pandas, glob, pandas, re, shutil
 from glob import glob
 
 #argv[2] is 555_BUSCO_unique-single-count.txt // make into list to cycle though
 uniqueids = open('BUSCOs-unique-single.tsv', 'r')
 colnames = ['a']
-df = pandas.read_csv(uniqueids, sep='\t', names=colnames)
-goodids = df.a.tolist() #list of common BUSCO IDs
+df = pandas.read_csv(uniqueids, sep='\t', names=colnames) #turning column into dataframe with single column
+goodids = df.a.tolist() #dataframe to list of common BUSCO IDs
 masterfile = open('BUSCOs-complete-frag.tsv', 'r')
 mornames = ['buscoid', 'contigid', 'sourcetrans']
-masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames)
-for thing in goodids:
-	with open(thing + '_info.csv', 'w') as infom:
-		mast = masterdata.loc[masterdata['buscoid'] == thing ]
-#		fasta.write(masterdata.loc[masterdata['buscoid'] == thing])
+masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames) #dataframe of BUSCOIDs, contig IDs and organsim
+for thing in goodids: #for each entry in list of common BUSCO IDs
+	mast = masterdata[masterdata.buscoid == thing ]
+	with open(thing + '_info.csv', 'w') as infom: #making info file with data for each common busco ID
 		print >> infom , mast 
+	with open(thing + '.fasta', 'w') as fasta:
+		protlist = mast.contigid.tolist()
+		for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
+			proteingoop = file.split("/")[2] #pull contig IDs from file name
+			for protbusc  in protlist:
+				if protbusc in proteingoop:
+					fasta.write(proteingoop.strip())
+					fasta.write("\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#					print >> fasta,
+#		print protlist	
+		
+
+
+#need to get the damn 
+#				print >> fasta 
+#				intprot = shutil.proteingoop(fasta, sys.stdout)
+#				fasta.write(intprot)
+#				fasta.write("\n")
+
+
+
+#		mast = masterdata.loc[masterdata['buscoid'] == thing ]
+#		fasta.write(masterdata.loc[masterdata['buscoid'] == thing])
+#		print mast
+
 #		print(masterdata.loc[masterdata['buscoid'] == thing])
 #		fasta.write(line)
 #buscoid = df.a.tolist()
