@@ -18,11 +18,13 @@ for thing in goodids: #for each entry in list of common BUSCO IDs
 		protlist = mast.contigid.tolist()
 		for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
 			proteingoop = file.split("/")[2] #pull contig IDs from file name
-			for protbusc  in protlist:
-				if protbusc in proteingoop:
-					fasta.write(proteingoop.strip())
-					fasta.write("\n")
-
+			with open(file, 'r') as f:
+				for line in f:
+					for protbusc  in protlist:
+						if protbusc in proteingoop:
+							fasta.write(line.strip())
+							fasta.write("\n")
+	
 
 
 
