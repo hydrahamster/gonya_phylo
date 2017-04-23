@@ -17,14 +17,18 @@ for thing in goodids: #for each entry in list of common BUSCO IDs
 	with open(thing + '.fasta', 'w') as fasta:
 		protlist = mast.contigid.tolist()
 		for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
-			proteingoop = file.split("/")[2] #pull contig IDs from file name
+			fie = file.split("/")
+			proteingoop = fie[2] #pull contig IDs from file name
+			srcint = fie[0]
+			src = srcint.split("_")[2]
 			with open(file, 'r') as f:
 				for line in f:
 					for protbusc  in protlist:
 						if protbusc in proteingoop:
+#							fasta.write(src + '_' + line.strip())
 							fasta.write(line.strip())
 							fasta.write("\n")
-	
+#still problem	with labelling transcript ID with spourcew trans
 
 
 
