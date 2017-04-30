@@ -1,10 +1,10 @@
 
 #!/bin/bash
 
-organism = "strain_source"
+# to run change organism variable and with khmer env active:
+#	source khmerEnv/bin/activate
 
-#start virt env
-source khmerEnv/bin/activate
+organism=strain_source
 
 #make working and file directories, link data
 mkdir trimming_temp
@@ -13,12 +13,10 @@ cd trimming_temp
 ln -fs ../*.fastq.gz .
 
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L001_R1_* *_L001_R2_* s1_pe s1_se s2_pe s2_se \
-    LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L001_R1_* *_L001_R2_* s1_pe s1_se s2_pe s2_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
-interleave-reads.py s1_pe s2_pe | gzip -9c \
-    > ../trimmed/$organism_L001.pe.fq.gz
+interleave-reads.py s1_pe s2_pe | gzip -9c > ../trimmed/$organism_L001.pe.fq.gz
 
 # combine the single-ended files
 cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L001.se.fq.gz
@@ -27,12 +25,10 @@ cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L001.se.fq.gz
 rm s*
 
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L002_R1_* *_L002_R2_* s1_pe s1_se s2_pe s2_se \
-    LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L002_R1_* *_L002_R2_* s1_pe s1_se s2_pe s2_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
-interleave-reads.py s1_pe s2_pe | gzip -9c \
-    > ../trimmed/$organism_L002.pe.fq.gz
+interleave-reads.py s1_pe s2_pe | gzip -9c > ../trimmed/$organism_L002.pe.fq.gz
 
 # combine the single-ended files
 cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L002.se.fq.gz
@@ -41,14 +37,11 @@ cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L002.se.fq.gz
 rm s*
 
 
-cd trimming_temp
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L003_R1_* *_L003_R2_* s1_pe s1_se s2_pe s2_se \
-    LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L003_R1_* *_L003_R2_* s1_pe s1_se s2_pe s2_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
-interleave-reads.py s1_pe s2_pe | gzip -9c \
-    > ../trimmed/$organism_L003.pe.fq.gz
+interleave-reads.py s1_pe s2_pe | gzip -9c > ../trimmed/$organism_L003.pe.fq.gz
 
 # combine the single-ended files
 cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L003.se.fq.gz
@@ -57,12 +50,10 @@ cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L003.se.fq.gz
 rm s*
 
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L004_R1_* *_L004_R2_* s1_pe s1_se s2_pe s2_se \
-    LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L004_R1_* *_L004_R2_* s1_pe s1_se s2_pe s2_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
-interleave-reads.py s1_pe s2_pe | gzip -9c \
-    > ../trimmed/$organism_L004.pe.fq.gz
+interleave-reads.py s1_pe s2_pe | gzip -9c > ../trimmed/$organism_L004.pe.fq.gz
 
 # combine the single-ended files
 cat s1_se s2_se | gzip -9c > ../trimmed/$organism_L004.se.fq.gz
