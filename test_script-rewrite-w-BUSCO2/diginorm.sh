@@ -82,16 +82,17 @@ cd abundfilt
 
 filter-abund.py --variable-coverage ../diginorm/normC20k20.ct --threads ${THREADS:-1} ../diginorm/*.keep
 
-#extract pe files for use
+#extract good pe files for use
 cd ..
 mkdir digiresult
 cd digiresult
-# up to here!
+
 for file in ../abundfilt/*pe.fq.gz.keep.abundfilt
 do
    extract-paired-reads.py ${file}
 done
 
+#grab se from previous steps
 cd ../abundfilt
 for file in *.se.fq.gz.keep.abundfilt
 do
@@ -117,9 +118,9 @@ done
 
 cat *.1 > "$organism"_left.fq
 cat *.2 > "$organism"_right.fq
-#THECA_Thecadinium-kofoidii
 
-gunzip -c *.se.keep.abundfilt.fq.gz >> left.fq
+
+gunzip -c *.se.keep.abundfilt.fq.gz >> "$organism"_left.fq
 
 sudo /mnt/transient_nfs/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left "$organism"_left.fq --right "$organism"_right.fq --max_memory 50G --CPU 10 --output ./"$organism"_out-fuckoff-trinity
 
