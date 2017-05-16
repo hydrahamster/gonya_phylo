@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # to run change organism variable and with khmer env active:
-#	source /mnt/transient_nfs/programs/khmerEnv/bin/activate
+#	source khmerEnv/bin/activate
 
 organism='strain_source'
 #THECA_Thecadinium-kofoidii
@@ -14,7 +14,7 @@ ln -fs ../*.fastq.gz .
 
 #001.fastq.gz
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L001_R1_001.fastq.gz *_L001_R2_001.fastq.gz s1_pe s1_se s2_pe s2_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/wonderworld/programs/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred64 *_L001_R1_001.fastq.gz *_L001_R2_001.fastq.gz s1_pe s1_se s2_pe s2_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
 interleave-reads.py s1_pe s2_pe | gzip -9c > ../trimmed/"$organism"_L001.pe.fq.gz
@@ -26,7 +26,7 @@ cat s1_se s2_se | gzip -9c > ../trimmed/"$organism"_L001.se.fq.gz
 #rm s*
 
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L002_R1_* *_L002_R2_* s3_pe s3_se s4_pe s4_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/wonderworld/programs/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred64 *_L002_R1_* *_L002_R2_* s3_pe s3_se s4_pe s4_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
 interleave-reads.py s3_pe s4_pe | gzip -9c > ../trimmed/"$organism"_L002.pe.fq.gz
@@ -39,7 +39,7 @@ cat s3_se s4_se | gzip -9c > ../trimmed/"$organism"_L002.se.fq.gz
 
 
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L003_R1_* *_L003_R2_* s5_pe s5_se s6_pe s6_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/wonderworld/programs/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred64 *_L003_R1_* *_L003_R2_* s5_pe s5_se s6_pe s6_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
 interleave-reads.py s5_pe s6_pe | gzip -9c > ../trimmed/"$organism"_L003.pe.fq.gz
@@ -51,7 +51,7 @@ cat s5_se s6_se | gzip -9c > ../trimmed/"$organism"_L003.se.fq.gz
 #rm s*
 
 # run trimmomatic
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar PE -phred64 *_L004_R1_* *_L004_R2_* s7_pe s7_se s8_pe s8_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
+java -jar /mnt/wonderworld/programs/Trimmomatic-0.36/trimmomatic-0.36.jar PE -phred64 *_L004_R1_* *_L004_R2_* s7_pe s7_se s8_pe s8_se LEADING:3 TRAILING:3 SLIDINGWINDOW:4:5 MINLEN:25
 
 # interleave the remaining paired-end files
 interleave-reads.py s7_pe s8_pe | gzip -9c > ../trimmed/"$organism"_L004.pe.fq.gz
@@ -71,9 +71,9 @@ cd ..
 mkdir diginorm
 cd diginorm
 
-normalize-by-median.py --paired --ksize 20 --cutoff 20 --n_tables 4 --max-tablesize 6e9 -s normC20k20.ct *.pe.fq.gz
+normalize-by-median.py --paired --ksize 20 --cutoff 20 --n_tables 4 --max-tablesize 6e9 -s normC20k20.ct ../trimmed/*.pe.fq.gz
 
-normalize-by-median.py --cutoff 20 -l normC20k20.ct -s normC20k20.ct *.se.fq.gz
+normalize-by-median.py --cutoff 20 -l normC20k20.ct -s normC20k20.ct ../trimmed/*.se.fq.gz
 
 #low abundance filter
 cd ..
@@ -122,8 +122,8 @@ cat *.2 > "$organism"_right.fq
 
 gunzip -c *.se.keep.abundfilt.fq.gz >> "$organism"_left.fq
 
-sudo /mnt/transient_nfs/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left "$organism"_left.fq --right "$organism"_right.fq --max_memory 50G --CPU 10 --output ./"$organism"_out-fuckoff-trinity
+/mnt/wonderworld/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left "$organism"_left.fq --right "$organism"_right.fq --max_memory 50G --CPU 10 --output ./"$organism"_out-fuckoff-trinity
 
-sudo mv "$organism"_out-fuckoff-trinity/Trinity.fasta "$organism"_assembly.fasta
+mv "$organism"_out-fuckoff-trinity/Trinity.fasta "$organism"_assembly.fasta
 
-sudo python /mnt/transient_nfs/programs/busco/BUSCO.py -i "$organism"_assembly.fasta -o "$organism"_BUSCO -l /mnt/transient_nfs/programs/busco/protists_ensembl -m tran -c 10
+python /mnt/wonderworld/programs/busco/BUSCO.py -i "$organism"_assembly.fasta -o "$organism"_BUSCO -l /mnt/wonderworld/programs/busco/protists_ensembl -m tran -c 10
