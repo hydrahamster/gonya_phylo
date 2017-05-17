@@ -11,7 +11,7 @@ protfiles = file(params.protseqs)
 
 /*
  *Count how many single complete/frag BUSCOs are common across the transcriptomes
- *input/output should be correct in script
+ *can I determine input/output like this? is glob still adequate?
  */
 process AAtag {
 
@@ -19,13 +19,14 @@ input:
 file protraw from protfiles
 
 output:
+file("*.FAA") into taggedAAs
 
-"""
+#"""
 #!/usr/bin/env python
 import os,sys,pandas, glob, pandas, re, shutil
 from glob import glob
 
-for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
+for file in glob('${protraw}'): #looking through all sub directories 
 	fie = file.split("/")[0]
 	name = file.split("/")[2]
 	nup = name.upper()
@@ -43,7 +44,7 @@ for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub di
 					outy.write("\n")
 				else:
 					outy.write(line)
-"""
+#"""
 
 }
 
@@ -58,10 +59,10 @@ process completequery {
 input:
 file tablesin from fulltable
 
-output
+output:
 file("BUSCOs-complete-frag.tsv") into compq
 
-"""
+#"""
 #!/usr/bin/env python
 
 import os,sys,glob
@@ -81,7 +82,7 @@ with open('BUSCOs-complete-frag.tsv', 'w') as out:
 			out.write("\t")
 			out.write(sfile.strip())
 			out.write("\n")
-"""
+#"""
 
 }
 
@@ -92,20 +93,20 @@ with open('BUSCOs-complete-frag.tsv', 'w') as out:
  */
 process countBUSCO {
 
-input
-file BUSCOs-list from compq
+input:
+file BUSCOslist from compq
 
-output
+output:
 file("BUSCOs-unique-single.tsv") into uniquelist
 
-"""
+#"""
 #!/usr/bin/env python
 
 import os,sys,pandas, collections
 from collections import defaultdict
 
 with open('BUSCOs-unique-single.tsv', 'w') as prod:
-	sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
+	sourcef = open('${BUSCOslist}', 'r') #single ' or double " ?
 	colnames = ['a', 'b', 'c'] 
 	df = pandas.read_csv(sourcef, sep='\t', names=colnames) #colnames headers for df contruction
 	IDlist = df.a.tolist() #turn column a, protein IDs, into list
@@ -117,30 +118,32 @@ with open('BUSCOs-unique-single.tsv', 'w') as prod:
 #			prod.write(line.strip())
 			prod.write(entry)
 			prod.write("\n") #next entry on new line
-"""
+#"""
 
 }
 
 /*
- *
+ *Problem: file from compq already used, how to make multi copies to feed into channels?
  */
 process IDtofasta {
 
-input
+input:
+file uniqueIDs from uniquelist
+file allIDs from compq
 
-output
+output:
+file("*.fasta") into 
 
-"""
+#"""
 #!/usr/bin/env python
 import os,sys,pandas, glob, pandas, re, shutil
 from glob import glob
 
-#argv[2] is 555_BUSCO_unique-single-count.txt // make into list to cycle though
-uniqueids = open('BUSCOs-unique-single.tsv', 'r')
+uniqueids = open('${uniqueIDs}', 'r')
 colnames = ['a']
 df = pandas.read_csv(uniqueids, sep='\t', names=colnames) #turning column into dataframe with single column
 goodids = df.a.tolist() #dataframe to list of common BUSCO IDs
-masterfile = open('BUSCOs-complete-frag.tsv', 'r')
+masterfile = open('${allIDs}', 'r')
 mornames = ['buscoid', 'contigid', 'sourcetrans']
 masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames) #dataframe of BUSCOIDs, contig IDs and organsim
 for thing in goodids: #for each entry in list of common BUSCO IDs
@@ -149,7 +152,7 @@ for thing in goodids: #for each entry in list of common BUSCO IDs
 		print >> infom , mast 
 	with open(thing + '.fasta', 'w') as fasta:
 		protlist = mast.contigid.tolist()
-		for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories 
+		for file in glob('*.FAA'): #looking through all sub directories ~ new folder for keeping shit neat?
 			fie = file.split("/")
 			proteingoop = fie[2] #pull contig IDs from file name
 			srcint = fie[0]
@@ -158,10 +161,9 @@ for thing in goodids: #for each entry in list of common BUSCO IDs
 				for line in f:
 					for protbusc  in protlist:
 						if protbusc in proteingoop:
-#							fasta.write(src + '_' + line.strip())
 							fasta.write(line.strip())
 							fasta.write("\n")
-"""
+#"""
 }
 
 /*
@@ -173,7 +175,7 @@ input
 
 output
 
-"""
+#"""
 #!/bin/bash
 
 BUSCOID=$1
@@ -192,7 +194,7 @@ grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155
 
 # align extracted seqs to library file
 /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa hmmer_profiles/BUSCOeuk$BUSCOID.hmm BUSCOeuk$BUSCOID-seq.fa > BUSCOeuk$BUSCOID.aln.fa
-"""
+#"""
 }
 
 /*
@@ -204,10 +206,10 @@ input
 
 output
 
-"""
+#"""
 sed -i -e s/[a-z]/-/g *.aln.f
 sed -i -e s/*/-/g *.aln.fa
-"""
+#"""
 
 }
 
@@ -220,7 +222,7 @@ input
 
 output
 
-"""
+#"""
 java -jar readseq.jar -f17 *.aln.fa
-"""
+#"""
 }
