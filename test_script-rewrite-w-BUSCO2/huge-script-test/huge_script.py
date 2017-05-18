@@ -3,11 +3,10 @@ import os, sys, glob, pandas, re, shutil, collections
 from glob import glob
 from collections import defaultdict
 
-def AAtag(btables):
+def AAtag():
 #this is going to be function input:
 #(btables = for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories )
-	btables = glob('run_*/translated_proteins/*.faa') #looking through all sub directories
-	for file in btables:
+	for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories
 		fie = file.split("/")[0]
 		name = file.split("/")[2]
 		nup = name.upper()
@@ -25,12 +24,12 @@ def AAtag(btables):
 						outy.write(line)
 #				return
 					
-def completequery(fulltable):
+def completequery():
 	with open('BUSCOs-complete-frag.tsv', 'w') as out:
 #now this is input:
-#(  fulltable =  for file in glob('full_table_*'):)
-		fulltable =  glob('run_*/full_table_*')
-		for file in fulltable:
+		for file in glob('run*/full_table_*'):
+#		fulltable =  glob('run_*/full_table_*')
+#		for file in fulltable:
 			nfile = file.split("/")[1]
 			sfile = nfile.split("_")[3]
         		with open(file, 'r') as f:
@@ -45,10 +44,10 @@ def completequery(fulltable):
 					out.write("\t")
 					out.write(sfile.strip())
 					out.write("\n")
-def countBUSCOs(sourcef):
+def countBUSCOs():
 	with open('BUSCOs-unique-single.tsv', 'w') as prod:
 #input:
-	sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
+		sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
 		colnames = ['a', 'b', 'c'] 
 		df = pandas.read_csv(sourcef, sep='\t', names=colnames) #colnames headers for df contruction
 		IDlist = df.a.tolist() #turn column a, protein IDs, into list
@@ -60,7 +59,7 @@ def countBUSCOs(sourcef):
 				prod.write(entry)
 				prod.write("\n") #next entry on new line
 
-def ID-fasta(uniqueids , masterfile):
+def IDfasta():
 #input uniqueids:
 	uniqueids = open('BUSCOs-unique-single.tsv', 'r')
 	colnames = ['a']
@@ -75,11 +74,13 @@ def ID-fasta(uniqueids , masterfile):
 		with open(ping + '_info.csv', 'w') as infom: #making info file with data for each common busco ID
 			print >> infom , mast 
 		with open(ping + '.fasta', 'w') as fasta:
-			protlist = mast.contigid.tolist()
+			protlistint = mast.contigid.tolist()
+			protlist = protlistint.upper()
 			for file in glob('*.FAA'): #PROBLEM - re-write
 				fie = file.split(".")[0] #need to split on (".")[0] and then ("_")[1]
-				fo = fie.split("_")[1:] #pull contig IDs from file name, make lower case again
-				proteingoop = fo.lower()
+				proteingoop = fie.split("_")[1:] #pull contig IDs from file name, make lower case again
+#				 = 
+#{item.lower() for item in list fo}
 #				srcint = fie[0]
 #				src = srcint.split("_")[2] # where the fuck is this going
 				with open(file, 'r') as f:
@@ -89,10 +90,12 @@ def ID-fasta(uniqueids , masterfile):
 								fasta.write(line.strip()) #needs to be written in  upper case
 								fasta.write("\n")
 
+#btables = glob('run_*/translated_proteins/*.faa')
+#fulltable =  glob('run_*/full_table_*')
 AAtag()
 completequery()
 countBUSCOs()
-ID-fasta()
+IDfasta()
 #btables = glob('run_*/translated_proteins/*.faa') #input for AAtag
 #call AAtag
 
