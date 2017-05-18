@@ -13,7 +13,7 @@ protfiles = file(params.protseqs)
  *How do I deal with the input channles?
  */
 process buscofasta {
-
+    publishDir 'align_output', mode: 'copy', overwrite: 'true'
 input:
 file protraw from protfiles
 file tables from
@@ -111,23 +111,21 @@ file("BUSCO*.aln.fa") into aln
 
 #"""
 #!/bin/bash
-
-BUSCOID=$1
-
-#remove previously built reference
-#rm all15incl-caribaeus-6xORfs.fasta.ssi
-
+BUSCOID=$(basename ${buschm} .hmm)
+for BUSCOID in ${fastas}; do #somehow split on '.' and only use first half as "in"
 # search and output names of hits into table
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout BUSCOeuk$BUSCOID.tbl hmmer_profiles/BUSCOeuk$BUSCOID.hmm $BUSCOID.fasta
+	/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout BUSCOeuk$BUSCOID.tbl hmmer_profiles/BUSCOeuk$BUSCOID.hmm $BUSCOID.fasta
 
 # make index for input file
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index $BUSCOID.fasta
+	/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index $BUSCOID.fasta
 
 # use table to extract sequences with hits
-grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f $BUSCOID.fasta - > BUSCOeuk$BUSCOID-seq.fa
+	grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f $BUSCOID.fasta - > BUSCOeuk$BUSCOID-seq.fa
 
 # align extracted seqs to library file
-/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa hmmer_profiles/BUSCOeuk$BUSCOID.hmm BUSCOeuk$BUSCOID-seq.fa > BUSCOeuk$BUSCOID.aln.fa
+	/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa hmmer_profiles/BUSCOeuk$BUSCOID.hmm BUSCOeuk$BUSCOID-seq.fa > BUSCOeuk$BUSCOID.aln.fa
+
+done
 #"""
 }
 
@@ -135,7 +133,7 @@ grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155
  * clean uncertain alignments
  */
 process characterchange {
-
+    publishDir 'align_output', mode: 'copy', overwrite: 'true'
 input:
 file algns from aln
 
@@ -153,7 +151,7 @@ sed -i -e s/*/-/g ${algns}
  *
  */
 process convertnexus {
-
+    publishDir 'align_output', mode: 'copy', overwrite: 'true'
 input:
 file cleaned from clnaln
 
