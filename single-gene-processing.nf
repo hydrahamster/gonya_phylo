@@ -10,170 +10,104 @@ hmmerlib = file(params.hmmerlib
 protfiles = file(params.protseqs)
 
 /*
- *Count how many single complete/frag BUSCOs are common across the transcriptomes
- *can I determine input/output like this? is glob still adequate?
+ *How do I deal with the input channles?
  */
-process AAtag {
+process buscofasta {
 
 input:
 file protraw from protfiles
+file tables from
 
 output:
-file("*.FAA") into taggedAAs
+file("EP*.fasta") into uniquebuscos
 
 #"""
 #!/usr/bin/env python
-import os,sys,pandas, glob, pandas, re, shutil
+import os, sys, glob, pandas, re, shutil, collections
 from glob import glob
-
-for file in glob('${protraw}'): #looking through all sub directories 
-	fie = file.split("/")[0]
-	name = file.split("/")[2]
-	nup = name.upper()
-	sourcey = fie.split("_")[2] #pull contig IDs from file name
-	upsourcey = sourcey.upper()
-	with open(file, 'r') as inni:
-		with open(upsourcey + '_' + nup, 'w') as outy:
-#		with open(sourcey + '_' + file, 'w') as p:
-			for line in inni:
-				if '>' in line:
-#			f.write(line.replace('>', '>' + sourcey + '_'))
-					lined = line.replace('>', '>' + upsourcey + '_')
-					linedup = lined.upper()
-					outy.write(linedup.strip())
-					outy.write("\n")
-				else:
-					outy.write(line)
-#"""
-
-}
-
-
-/*
- *Work out which complete BUSCOs are in each transcriptome asm
- *Make directory wirh all full tables to work im rather than searching sub directories OR change path in script to folder
- *input in python still ${xx}? Do I still need glob?
- */
-process completequery {
-
-input:
-file tablesin from fulltable
-
-output:
-file("BUSCOs-complete-frag.tsv") into compq
-
-#"""
-#!/usr/bin/env python
-
-import os,sys,glob
-from glob import glob
-with open('BUSCOs-complete-frag.tsv', 'w') as out:
-    for file in glob(${tablesin}):
-	sfile = file.split("_")[3]
-        with open(file, 'r') as f:
-            for line in f:
-		if 'Complete' in line or 'Fragmented' in line:
-			l = line.split("\t")
-			buscoid = l[0]
-			contigid = l[2]
-			out.write(buscoid.strip())
-			out.write("\t")
-			out.write(contigid.strip())
-			out.write("\t")
-			out.write(sfile.strip())
-			out.write("\n")
-#"""
-
-}
-
-
-/*
- *Count how many single complete/frag BUSCOs are common across the transcriptomes
- *input/output should be correct in script
- */
-process countBUSCO {
-
-input:
-file BUSCOslist from compq
-
-output:
-file("BUSCOs-unique-single.tsv") into uniquelist
-
-#"""
-#!/usr/bin/env python
-
-import os,sys,pandas, collections
 from collections import defaultdict
 
-with open('BUSCOs-unique-single.tsv', 'w') as prod:
-	sourcef = open('${BUSCOslist}', 'r') #single ' or double " ?
-	colnames = ['a', 'b', 'c'] 
-	df = pandas.read_csv(sourcef, sep='\t', names=colnames) #colnames headers for df contruction
-	IDlist = df.a.tolist() #turn column a, protein IDs, into list
-	IDdict = defaultdict(int) #dictionatry type makes new key with entry 0 if not present yet an entry
-	for thing in IDlist: #cycle though entries in ID list
-		IDdict[thing] += 1 #+1 to value of the corresponding key from list
-	for entry in IDdict: #cycle through each key
-		if IDdict.get(entry) == 2: #if value for each key is the same as transcriptomes queried
-#			prod.write(line.strip())
-			prod.write(entry)
-			prod.write("\n") #next entry on new line
+def completequery():
+	with open('BUSCOs-complete-frag.tsv', 'w') as out:
+		for file in glob('run*/full_table_*'):
+			nfile = file.split("/")[1]
+			sfile = nfile.split("_")[3]
+        		with open(file, 'r') as f:
+        		    for line in f:
+				if 'Complete' in line or 'Fragmented' in line:
+					l = line.split("\t")
+					buscoid = l[0]
+					contigid = l[2]
+					out.write(buscoid.strip())
+					out.write("\t")
+					out.write(contigid.strip())
+					out.write("\t")
+					out.write(sfile.strip())
+					out.write("\n")
+def countBUSCOs():
+	with open('BUSCOs-unique-single.tsv', 'w') as prod:
+		sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
+		colnames = ['a', 'b', 'c'] 
+		df = pandas.read_csv(sourcef, sep='\t', names=colnames) #colnames headers for df contruction
+		IDlist = df.a.tolist() #turn column a, protein IDs, into list
+		IDdict = defaultdict(int) #dictionatry type makes new key with entry 0 if not present yet an entry
+		for thing in IDlist: #cycle though entries in ID list
+			IDdict[thing] += 1 #+1 to value of the corresponding key from list
+		for entry in IDdict: #cycle through each key
+			if IDdict.get(entry) == 2: #if value for each key is the same as transcriptomes queried
+				prod.write(entry)
+				prod.write("\n") #next entry on new line
+
+def IDfasta(): # this one is so many ways fucked to sunday
+	uniqueids = open('BUSCOs-unique-single.tsv', 'r')
+	colnames = ['a']
+	df = pandas.read_csv(uniqueids, sep='\t', names=colnames) #turning column into dataframe with single column
+	goodids = df.a.tolist() #dataframe to list of common BUSCO IDs
+	masterfile = open('BUSCOs-complete-frag.tsv', 'r')
+	mornames = ['buscoid', 'contigid', 'sourcetrans']
+	masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames) #dataframe of BUSCOIDs, contig IDs and organsim
+	for ping in goodids: #for each entry in list of common BUSCO IDs
+		mast = masterdata[masterdata.buscoid == ping ]
+		with open(ping + '_info.tsv', 'w') as infom: #making info file with data for each common busco ID
+			print >> infom , mast 
+		with open(ping + '.fasta', 'w') as fasta:
+			protlist = mast.contigid.tolist()
+			for file in glob('run_*/translated_proteins/*.faa'): #PROBLEM - re-write
+				fie = file.split("/")
+				proteingoop = fie[2] #pull contig IDs from file name
+				srcint = fie[0]
+				src = srcint.split("_")[2]
+				with open(file, 'r') as f:
+					for line in f:
+						for protbusc in protlist:
+							if protbusc in proteingoop:
+								lined = line.replace('>', '>' + src + '_')
+								linedup = lined.upper()
+								fasta.write(linedup.strip()) #needs to be written in  upper case
+								fasta.write("\n")
+
+
+completequery()
+countBUSCOs()
+IDfasta()
+
 #"""
 
 }
 
-/*
- *Problem: file from compq already used, how to make multi copies to feed into channels?
- */
-process IDtofasta {
 
-input:
-file uniqueIDs from uniquelist
-file allIDs from compq
-
-output:
-file("*.fasta") into 
-
-#"""
-#!/usr/bin/env python
-import os,sys,pandas, glob, pandas, re, shutil
-from glob import glob
-
-uniqueids = open('${uniqueIDs}', 'r')
-colnames = ['a']
-df = pandas.read_csv(uniqueids, sep='\t', names=colnames) #turning column into dataframe with single column
-goodids = df.a.tolist() #dataframe to list of common BUSCO IDs
-masterfile = open('${allIDs}', 'r')
-mornames = ['buscoid', 'contigid', 'sourcetrans']
-masterdata = pandas.read_csv(masterfile, sep='\t', names=mornames) #dataframe of BUSCOIDs, contig IDs and organsim
-for thing in goodids: #for each entry in list of common BUSCO IDs
-	mast = masterdata[masterdata.buscoid == thing ]
-	with open(thing + '_info.csv', 'w') as infom: #making info file with data for each common busco ID
-		print >> infom , mast 
-	with open(thing + '.fasta', 'w') as fasta:
-		protlist = mast.contigid.tolist()
-		for file in glob('*.FAA'): #looking through all sub directories ~ new folder for keeping shit neat?
-			fie = file.split("/")
-			proteingoop = fie[2] #pull contig IDs from file name
-			srcint = fie[0]
-			src = srcint.split("_")[2]
-			with open(file, 'r') as f:
-				for line in f:
-					for protbusc  in protlist:
-						if protbusc in proteingoop:
-							fasta.write(line.strip())
-							fasta.write("\n")
-#"""
-}
 
 /*
- *
+ *how do I match the file and the hmmlib here to feed in?
  */
 process hmmsearchalign {
 
-input
+input:
+file fastas from uniquebuscos
+file buschm from hmmerlib
 
-output
+output:
+file("BUSCO*.aln.fa") into aln
 
 #"""
 #!/bin/bash
@@ -202,13 +136,15 @@ grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155
  */
 process characterchange {
 
-input
+input:
+file algns from aln
 
-output
+output:
+file("BUSCO*.aln.fa") into clnaln
 
 #"""
-sed -i -e s/[a-z]/-/g *.aln.f
-sed -i -e s/*/-/g *.aln.fa
+sed -i -e s/[a-z]/-/g ${algns}
+sed -i -e s/*/-/g ${algns}
 #"""
 
 }
@@ -218,11 +154,13 @@ sed -i -e s/*/-/g *.aln.fa
  */
 process convertnexus {
 
-input
+input:
+file cleaned from clnaln
 
-output
+output:
+file("*.nexus") into voila
 
 #"""
-java -jar readseq.jar -f17 *.aln.fa
+java -jar readseq.jar -f17 ${cleaned}
 #"""
 }
