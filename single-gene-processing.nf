@@ -104,26 +104,25 @@ process hmmsearchalign {
 
 input:
 file fastas from uniquebuscos
-file buschm from hmmerlib
+file buschmm from hmmerlib
 
 output:
-file("BUSCO*.aln.fa") into aln
+file("*.aln.fa") into aln
 
 #"""
 #!/bin/bash
-BUSCOID=$(basename ${buschm} .hmm)
-for BUSCOID in ${fastas}; do #somehow split on '.' and only use first half as "in"
-# search and output names of hits into table
-	/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout BUSCOeuk$BUSCOID.tbl hmmer_profiles/BUSCOeuk$BUSCOID.hmm $BUSCOID.fasta
+BUSCOID=$(basename ${buschmm} .hmm) #fuck let's hope this works
+for BUSCOID in ${fastas}; do 
+	/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout $BUSCOID.tbl /mnt/wonderworld/programs/busco/protists_ensembl/hmms/$BUSCOID.hmm $BUSCOID.fasta
 
 # make index for input file
-	/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index $BUSCOID.fasta
+	/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index $BUSCOID.fasta
 
 # use table to extract sequences with hits
-	grep -v "^#" BUSCOeuk$BUSCOID.tbl | gawk '{print $1}' | /panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f $BUSCOID.fasta - > BUSCOeuk$BUSCOID-seq.fa
+	grep -v "^#" $BUSCOID.tbl | gawk '{print $1}' | /mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f $BUSCOID.fasta - > $BUSCOID-seq.fa
 
 # align extracted seqs to library file
-	/panfs/panspermia/125155/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa hmmer_profiles/BUSCOeuk$BUSCOID.hmm BUSCOeuk$BUSCOID-seq.fa > BUSCOeuk$BUSCOID.aln.fa
+	/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa /mnt/wonderworld/programs/busco/protists_ensembl/hmms/$BUSCOID.hmm $BUSCOID-seq.fa > $BUSCOID.aln.fa
 
 done
 #"""
@@ -148,7 +147,7 @@ sed -i -e s/*/-/g ${algns}
 }
 
 /*
- *
+ *file conversion via readseq.jar
  */
 process convertnexus {
     publishDir 'align_output', mode: 'copy', overwrite: 'true'
