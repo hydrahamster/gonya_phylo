@@ -2,6 +2,7 @@
 import os, sys, glob, pandas, re, shutil, collections
 from glob import glob
 from collections import defaultdict
+from re import sub
 
 def completequery():
 	with open('BUSCOs-complete-frag.tsv', 'w') as out:
@@ -67,6 +68,31 @@ def IDfasta(): # this one is so many ways fucked to sunday
 								linedup = lined.upper()
 								fasta.write(linedup.strip()) #needs to be written in  upper case
 								fasta.write("\n")
+def hmmaln():
+	for file in glob('EP*.fasta'):
+		buscoID = file.split(".")[0]
+		with open(file, 'r'):
+#	for buscoID in buscscore:
+			search_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout " + buscoID + ".tbl /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + ".fasta"
+			index_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index " + buscoID + ".fasta"
+			extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | /home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
+			align_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"
+			os.system(search_cmd)
+			os.system(index_cmd)
+			os.system(extr_cmd)
+			os.system(align_cmd)
+
+def cleanaln():
+	for file in glob('EP*.aln.fa'):
+		buscID = file.split(".")[0]
+		with open(buscID + '.clean.aln.fa' , 'w') as wut:
+			with open(file, 'r') as reading:
+				for line in reading:
+#					linrepl = line.replace('\*', '-')
+					linclean = sub("[a-z]" , '-' , line)
+					linrepl = sub("\*" , '-' , linclean)
+					wut.write(linrepl.strip())
+					wut.write("\n")
 
 #def AAtag():
 #this is going to be function input:
@@ -89,9 +115,13 @@ def IDfasta(): # this one is so many ways fucked to sunday
 #						outy.write(line)
 #btables = glob('run_*/translated_proteins/*.faa')
 #fulltable =  glob('run_*/full_table_*')
+
+
 completequery()
 countBUSCOs()
 IDfasta()
+hmmaln()
+cleanaln()
 #AAtag()
 # what if I let the things run and do the AA tag of the output files only?
 

@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 
-import sys
-import os
+import os, sys, glob, pandas, re, shutil, collections
+from glob import glob
 
-buscin = 'EP*.fasta'
-buscscore = buscin.split(".")[0]
-
-for buscoID in buscscore:
-	search_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/hmmsearch --tblout " + buscoID + ".tbl /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "-collect.fasta"
-	index_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/esl-sfetch --index " + buscoID + "-collect.fasta"
-	extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | /home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/esl-sfetch -f " + buscoID + "-collect.fasta -> " + buscoID + "-seq.fa"
-	align_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/hmmalign --outformat afa /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "seq.fa > " + buscoID + ".aln.fa"
-	print search_cmd
-	print index_cmd
-	print extr_cmd
-	print align_cmd
+for file in glob('EP*.fasta'):
+	buscoID = file.split(".")[0]
+	with open(file, 'r'):
+#	for buscoID in buscscore:
+		search_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout " + buscoID + ".tbl /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + ".fasta"
+		index_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index " + buscoID + ".fasta"
+		extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | /home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
+		align_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"
+		os.system(search_cmd)
+		os.system(index_cmd)
+		os.system(extr_cmd)
+		os.system(align_cmd)
+#problem: uses all 6 ORFs to align
 
 
 #BUSCOID=$(basename ${buschmm} .hmm) #fuck let's hope this works
