@@ -2,17 +2,18 @@
 import os, sys, glob, pandas, re, shutil, collections
 from glob import glob
 from collections import defaultdict
+from re import sub
 
-def completequery():
+def completequery(): #find which BUSCOs are complete or fragmented in run
 	with open('BUSCOs-complete-frag.tsv', 'w') as out:
 #now this is input:
 		for file in glob('run*/full_table_*'):
 #		fulltable =  glob('run_*/full_table_*')
 #		for file in fulltable:
 			nfile = file.split("/")[1]
-			sfile = nfile.split("_")[3]
-        		with open(file, 'r') as f:
-        		    for line in f:
+			sfile = nfile.split("_")[3] #get source organism name
+        		with open(file, 'r') as fum:
+        		    for line in fum:
 				if 'Complete' in line or 'Fragmented' in line:
 					l = line.split("\t")
 					buscoid = l[0]
@@ -23,7 +24,7 @@ def completequery():
 					out.write("\t")
 					out.write(sfile.strip())
 					out.write("\n")
-def countBUSCOs():
+def countBUSCOs(): #extract the BUSCOs present in all transcriptomes, or pre-selected number of
 	with open('BUSCOs-unique-single.tsv', 'w') as prod:
 #input:
 		sourcef = open('BUSCOs-complete-frag.tsv', 'r') #single ' or double " ?
@@ -34,7 +35,7 @@ def countBUSCOs():
 		for thing in IDlist: #cycle though entries in ID list
 			IDdict[thing] += 1 #+1 to value of the corresponding key from list
 		for entry in IDdict: #cycle through each key
-			if IDdict.get(entry) == 2: #if value for each key is the same as transcriptomes queried
+			if IDdict.get(entry) == 2: #if value for each key is the same as target
 				prod.write(entry)
 				prod.write("\n") #next entry on new line
 
@@ -64,13 +65,13 @@ def IDfasta(): # this one is so many ways fucked to sunday
 						for protbusc in protlist:
 							if protbusc in proteingoop:
 								lined = line.replace('>', '>' + src + '_')
-								linedup = lined.upper()
-								fasta.write(linedup.strip()) #needs to be written in  upper case
+								linedup = lined.upper() #needs to be written in  upper case to not confuse w uncertain alignment in cleanaln()
+								fasta.write(linedup.strip()) 
 								fasta.write("\n")
 
-def hmmaln():
-	for file in glob('EP*.fasta'):
-		buscoID = file.split(".")[0]
+def hmmaln(): #use hmmer to extract correct ORF for fastafiles and align
+	for file in glob('EP*.fasta'): #fasta files w all 6 ORFs of protein files
+		buscoID = file.split(".")[0] #get busco ID
 		with open(file, 'r'):
 #	for buscoID in buscscore:
 			search_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout " + buscoID + ".tbl /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + ".fasta"
@@ -78,22 +79,30 @@ def hmmaln():
 			extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | /home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
 			align_cmd = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"
 			os.system(search_cmd)
-			os.system(index_cmd)
-			os.system(extr_cmd)
-			os.system(align_cmd)
+			os.system(index_cmd) # make index for input file
+			os.system(extr_cmd) # use table to extract sequences with hits
+			os.system(align_cmd) # align extracted seqs to library file
 
-def cleanaln():
+def cleanaln(): #uses whole seqs but only parts align to the refference hmmer lib. removing uncertain alignment (lowercase) and noise (*)
 	for file in glob('EP*.aln.fa'):
-		buscID = file.split(".")[0]
-		with open(buscID + '.clean.aln.fa' , 'w') as wut:
-			with open(file, 'r') as reading:
+		buscID = file.split(".")[0] #use just ID
+		with open(buscID + '.clean.aln.fa' , 'w') as wut: #new file designation
+			with open(file, 'r') as reading: #old file
 				for line in reading:
-#					linrepl = line.replace('\*', '-')
-					linclean = sub("[a-z]" , '-' , line)
-					linrepl = sub("\*" , '-' , linclean)
-					wut.write(linrepl.strip())
+					linclean = sub("[a-z]" , '-' , line) #replace lowercase with -
+					linrepl = sub("\*" , '-' , linclean) #replace * with -
+					wut.write(linrepl.strip()) #write it
 					wut.write("\n")
-
+def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib
+	for file in glob('EP*.clean.aln.fa'): # all new clean alignments
+		with open(file , 'r') as query:
+			total = 0 #reset counter for every file
+			for line in query: 
+				check = line.find('>') # check by line for > which designates start of fasta
+				if check != -1 and query != 0:
+					total += 1 # if > present, +1 to total
+			if total > 2: #insert number of transcriptomes here
+				print('\n\n    %%%%%%%%%%%%%%%%%%%%%%\n    %%\n    %% WARNING\n    %%\n    %% Hissy fit alignment\n    %%\n    %% ' + file + '    \n    %%\n    %%%%%%%%%%%%%%%%%%%%%\n\n') # if there is too many 
 #def AAtag():
 #this is going to be function input:
 #(btables = for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories )
@@ -120,6 +129,7 @@ countBUSCOs()
 IDfasta()
 hmmaln()
 cleanaln()
+sanitycheck()
 #AAtag()
 # what if I let the things run and do the AA tag of the output files only?
 
