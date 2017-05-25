@@ -7,12 +7,12 @@
  * - change params for correct PATHs
  * - ./single-gene-processing.nf
  *
- *params.fulltable PATH to pipeline1 BUSCO full table output. as ${full_table}
- *params.hmmerlib PATH to hmmer reference libraries ie. BUSCO.hmm. as ${hmmer_lib}
- *params.hmmerbin PATH to hmmer binaries. as ${hmmer_bin}
- *params.protseqs PATH to pipeline1 BUSCO trnaslated protein output, as ${protseqs}
- *params.transcriptomes for number of transcriptomes BUSCOs should be represented in. as ${trans_number}
- *params.reaseq PATH to readseq.jar. as ${readseqpath}
+ *params.fulltable PATH to pipeline1 BUSCO full table output
+ *params.hmmerlib PATH to hmmer reference libraries ie. BUSCO.hmm
+ *params.hmmerbin PATH to hmmer binaries
+ *params.protseqs PATH to pipeline1 BUSCO trnaslated protein output
+ *params.transcriptomes for number of transcriptomes BUSCOs should be represented in
+ *params.reaseq PATH to readseq.jar
  */
 
 params.fulltable = "/home/nurgling/PhD/gonya_phylo/test_script-rewrite-w-BUSCO2/huge-script-test/run_*/full_table_*" 
@@ -20,20 +20,19 @@ params.hmmerlib = "/home/nurgling/Programs/busco/protists_ensembl/hmms/"
 params.hmmerbin = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries" 
 params.protseqs = "/home/nurgling/PhD/gonya_phylo/test_script-rewrite-w-BUSCO2/huge-script-test/run_*/translated_proteins" 
 params.transcriptomes = 2 
-params.reaseq = "/home/nurgling/Programs" 
+params.reaseq = "/home/nurgling/Programs"
 
-full_table = file(params.fulltable)
-hmmer_lib = file(params.hmmerlib)
-hmmer_bin = (params.hmmerbin)
-protseqs = file(params.protseqs)
-trans_number = (params.transcriptomes)
-readseqpath = (params.reaseq)
-
+/*
+ *fulltable = file(params.fulltable)
+ *hmmerlib = file(params.hmmerlib)
+ *protseqs = file(params.protseqs)
+ *transnumber = (params.transcriptomes)
+ *readseqpath = (params.reaseq)
+ */
 
 /*
  *How do I deal with the input channles?
  */
-
 process buscofasta {
     publishDir 'align_output', mode: 'copy', overwrite: 'true'
 
@@ -50,7 +49,7 @@ from re import sub
 def completequery(): #find which BUSCOs are complete or fragmented in run
 	with open('BUSCOs-complete-frag.tsv', 'w') as out:
 #now this is input:
-		for file in glob('!{params.fulltable}'):
+		for file in glob("!{params.fulltable}"):
 			nfile = file.split("/")[1]
 			sfile = nfile.split("_")[3] #get source organism name
         		with open(file, 'r') as fum:
@@ -76,7 +75,7 @@ def countBUSCOs(): #extract the BUSCOs present in all transcriptomes, or pre-sel
 		for thing in IDlist: #cycle though entries in ID list
 			IDdict[thing] += 1 #+1 to value of the corresponding key from list
 		for entry in IDdict: #cycle through each key
-			if IDdict.get(entry) == !{params.transcriptomes}: #if value for each key is the same as target
+			if IDdict.get(entry) == "!{params.transcriptomes}": #if value for each key is the same as target
 				prod.write(entry)
 				prod.write("\n") #next entry on new line
 
@@ -96,7 +95,7 @@ def IDfasta(): # this one is so many ways fucked to sunday
 			print >> infom , mast 
 		with open(ping + '.fasta', 'w') as fasta:
 			protlist = mast.contigid.tolist()
-			for file in glob('!{params.protseqs}/*.faa'): #PROBLEM - re-write
+			for file in glob('"!{params.protseqs}"/*.faa'): #PROBLEM - re-write
 				fie = file.split("/")
 				proteingoop = fie[2] #pull contig IDs from file name
 				srcint = fie[0]
@@ -115,10 +114,10 @@ def hmmaln(): #use hmmer to extract correct ORF for fastafiles and align
 		buscoID = file.split(".")[0] #get busco ID
 		with open(file, 'r'):
 #	for buscoID in buscscore:
-			search_cmd = "'!{params.hmmerbin}'/hmmsearch --tblout " + buscoID + ".tbl '!{params.hmmerlib}'" + buscoID + ".hmm " + buscoID + ".fasta"
-			index_cmd = "'!{params.hmmerbin}'/esl-sfetch --index " + buscoID + ".fasta"
-			extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | '!{params.hmmerbin}'/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
-			align_cmd = "'!{params.hmmerbin}'/hmmalign --outformat afa '!{params.hmmerlib}'" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"
+			search_cmd = ""!{params.hmmerbin}"/hmmsearch --tblout " + buscoID + ".tbl "!{params.hmmerlib}"" + buscoID + ".hmm " + buscoID + ".fasta"
+			index_cmd = ""!{params.hmmerbin}"/esl-sfetch --index " + buscoID + ".fasta"
+			extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | "!{params.hmmerbin}"/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
+			align_cmd = ""!{params.hmmerbin}"/hmmalign --outformat afa "!{params.hmmerlib}"" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"
 			os.system(search_cmd)
 			os.system(index_cmd) # make index for input file
 			os.system(extr_cmd) # use table to extract sequences with hits
@@ -142,7 +141,7 @@ def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib
 				check = line.find('>') # check by line for > which designates start of fasta
 				if check != -1 and query != 0:
 					total += 1 # if > present, +1 to total
-			if total > !{params.transcriptomes}: #insert number of transcriptomes here
+			if total > "!{params.transcriptomes}": #insert number of transcriptomes here
 				print('\n\n    %%%%%%%%%%%%%%%%%%%%%%\n    %%\n    %% WARNING\n    %%\n    %% Hissy fit alignment\n    %%\n    %% ' + file + '    \n    %%\n    %%%%%%%%%%%%%%%%%%%%%\n\n') # if there is too many 
 
 completequery()
@@ -168,6 +167,6 @@ output:
 file("*.nexus") into voila
 
 """
-java -jar '!{params.reaseq}'/readseq.jar -f17 ${cleaned}
+java -jar "!{params.reaseq}"/readseq.jar -f17 ${cleaned}
 """
 }
