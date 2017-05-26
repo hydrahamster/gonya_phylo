@@ -11,7 +11,7 @@
  *params.hmmerlib PATH to hmmer reference libraries ie. BUSCO.hmm. as ${hmmer_lib}
  *params.hmmerbin PATH to hmmer binaries. as ${hmmer_bin}
  *params.protseqs PATH to pipeline1 BUSCO trnaslated protein output, as ${protseqs}
- *params.transcriptomes for number of transcriptomes BUSCOs should be represented in. as ${trans_number}
+ *trans_number for number of transcriptomes BUSCOs should be represented in. as ${trans_number}
  *params.reaseq PATH to readseq.jar. as ${readseqpath}
  */
 
@@ -19,15 +19,14 @@ params.fulltable = "/home/nurgling/PhD/gonya_phylo/test_script-rewrite-w-BUSCO2/
 params.hmmerlib = "/home/nurgling/Programs/busco/protists_ensembl/hmms/" 
 params.hmmerbin = "/home/nurgling/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries" 
 params.protseqs = "/home/nurgling/PhD/gonya_phylo/test_script-rewrite-w-BUSCO2/huge-script-test/run_*/translated_proteins" 
-params.transcriptomes = 2 
 params.reaseq = "/home/nurgling/Programs" 
+trans_number = 2
 
 full_table = file(params.fulltable)
 hmmer_lib = file(params.hmmerlib)
-hmmer_bin = (params.hmmerbin)
+hmmer_bin = file(params.hmmerbin)
 protseqs = file(params.protseqs)
-trans_number = (params.transcriptomes)
-readseqpath = (params.reaseq)
+readseqpath = file(params.reaseq)
 
 
 /*
@@ -38,7 +37,7 @@ process buscofasta {
     publishDir 'align_output', mode: 'copy', overwrite: 'true'
 
 output:
-file("EP*.fasta") into uniquebuscos
+file("*.clean.aln.fa") into clnalin
 
 """
 #!/usr/bin/env python

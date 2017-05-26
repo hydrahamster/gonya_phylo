@@ -103,6 +103,11 @@ def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib
 					total += 1 # if > present, +1 to total
 			if total > 2: #insert number of transcriptomes here
 				print('\n\n    %%%%%%%%%%%%%%%%%%%%%%\n    %%\n    %% WARNING\n    %%\n    %% Hissy fit alignment\n    %%\n    %% ' + file + '    \n    %%\n    %%%%%%%%%%%%%%%%%%%%%\n\n') # if there is too many 
+			else:
+#				buscIDagain = file.split(".")[0]
+				jar_cmd = "java -jar /home/nurgling/Programs/readseq.jar -f17 " + file
+				os.system(jar_cmd)
+
 #def AAtag():
 #this is going to be function input:
 #(btables = for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories )
@@ -130,6 +135,7 @@ IDfasta()
 hmmaln()
 cleanaln()
 sanitycheck()
+
 #AAtag()
 # what if I let the things run and do the AA tag of the output files only?
 
