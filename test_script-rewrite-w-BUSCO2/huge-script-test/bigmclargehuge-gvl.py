@@ -8,8 +8,6 @@ def completequery(): #find which BUSCOs are complete or fragmented in run
 	with open('BUSCOs-complete-frag.tsv', 'w') as out:
 #now this is input:
 		for file in glob('run*/full_table_*'):
-#		fulltable =  glob('run_*/full_table_*')
-#		for file in fulltable:
 			nfile = file.split("/")[1]
 			sfile = nfile.split("_")[3] #get source organism name
         		with open(file, 'r') as fum:
@@ -35,7 +33,7 @@ def countBUSCOs(): #extract the BUSCOs present in all transcriptomes, or pre-sel
 		for thing in IDlist: #cycle though entries in ID list
 			IDdict[thing] += 1 #+1 to value of the corresponding key from list
 		for entry in IDdict: #cycle through each key
-			if IDdict.get(entry) == 2: #if value for each key is the same as target
+			if IDdict.get(entry) >= 15: #if value for each key is the same as target or higher
 				prod.write(entry)
 				prod.write("\n") #next entry on new line
 
@@ -93,15 +91,19 @@ def cleanaln(): #uses whole seqs but only parts align to the refference hmmer li
 					linrepl = sub("\*" , '-' , linclean) #replace * with -
 					wut.write(linrepl.strip()) #write it
 					wut.write("\n")
-def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib
+def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib // rewrite as target being number of lines in info file for the BUSCO
 	for file in glob('EP*.clean.aln.fa'): # all new clean alignments
 		with open(file , 'r') as query:
 			total = 0 #reset counter for every file
+			nom = file.split(".")[0]
+			ref = open(nom + '_info.tsv' , 'r')
+			dataref = pandas.read_csv(ref, sep='\t')
 			for line in query: 
+				sane = len(dataref.rows)
 				check = line.find('>') # check by line for > which designates start of fasta
 				if check != -1 and query != 0:
 					total += 1 # if > present, +1 to total
-			if total > 2: #insert number of transcriptomes here
+			if total > sane: #insert number of transcriptomes here
 				print('\n\n    %%%%%%%%%%%%%%%%%%%%%%\n    %%\n    %% WARNING\n    %%\n    %% Hissy fit alignment\n    %%\n    %% ' + file + '    \n    %%\n    %%%%%%%%%%%%%%%%%%%%%\n\n') # if there is too many 
 			else:
 #				buscIDagain = file.split(".")[0]

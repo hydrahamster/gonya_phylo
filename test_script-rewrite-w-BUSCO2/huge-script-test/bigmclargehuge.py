@@ -35,7 +35,7 @@ def countBUSCOs(): #extract the BUSCOs present in all transcriptomes, or pre-sel
 		for thing in IDlist: #cycle though entries in ID list
 			IDdict[thing] += 1 #+1 to value of the corresponding key from list
 		for entry in IDdict: #cycle through each key
-			if IDdict.get(entry) == 2: #if value for each key is the same as target
+			if IDdict.get(entry) >= 2: #if value for each key is the same as target
 				prod.write(entry)
 				prod.write("\n") #next entry on new line
 
@@ -97,11 +97,15 @@ def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib
 	for file in glob('EP*.clean.aln.fa'): # all new clean alignments
 		with open(file , 'r') as query:
 			total = 0 #reset counter for every file
+			nom = file.split(".")[0]
+			ref = open(nom + '_info.tsv' , 'r')
+			dataref = pandas.read_csv(ref, sep='\t')
 			for line in query: 
+				sane = dataref.shape[0]
 				check = line.find('>') # check by line for > which designates start of fasta
 				if check != -1 and query != 0:
 					total += 1 # if > present, +1 to total
-			if total > 2: #insert number of transcriptomes here
+			if total > sane: #insert number of transcriptomes here
 				print('\n\n    %%%%%%%%%%%%%%%%%%%%%%\n    %%\n    %% WARNING\n    %%\n    %% Hissy fit alignment\n    %%\n    %% ' + file + '    \n    %%\n    %%%%%%%%%%%%%%%%%%%%%\n\n') # if there is too many 
 			else:
 #				buscIDagain = file.split(".")[0]
