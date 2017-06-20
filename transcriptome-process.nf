@@ -25,7 +25,7 @@ output:
 file("${freads}_fastqc.html") into freadsfstcq 
 
 """
-fastqc ${freads}
+/mnt/wonderworld/programs/FastQC/fastqc ${freads}
 mv *_fastqc/fastqc_report.html ${freads}_fastqc.html
 """
 
@@ -42,7 +42,7 @@ output:
 file("${rreads}_fastqc.html") into rreadsfstcq 
 
 """
-fastqc ${rreads}
+/mnt/wonderworld/programs/FastQC/fastqc ${rreads}
 mv *_fastqc/fastqc_report.html ${rreads}_fastqc.html
 """
 
@@ -62,7 +62,7 @@ set file('*.forward_paired.fq.gz'),file('*.reverse_paired.fq.gz') into trimmedfq
 
 
 """
-java -jar /mnt/transient_nfs/programs/trimmomatic-0.36.jar \
+java -jar /mnt/wonderworld/programs/trimmomatic-0.36.jar \
 	PE -phred64 \
 	${freads} ${rreads} \
 	${freads}.forward_paired.fq.gz ${freads}.forward_unpaired.fq.gz \
@@ -83,7 +83,7 @@ output:
 file("${r1}-assembly.fasta") into asm
 
 """
-/mnt/transient_nfs/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left ${r1} --right ${r2} --max_memory 50G --CPU 10 --output ./${r1}-out-fuckoff-trinity
+/mnt/wonderworld/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left ${r1} --right ${r2} --max_memory 50G --CPU 10 --output ./${r1}-out-fuckoff-trinity
 mv ${r1}-out-fuckoff-trinity/Trinity.fasta ${r1}-assembly.fasta
 """
 // is this move fucking up the asm channel?
@@ -102,7 +102,7 @@ file("full_table_*")
 file("short_summary_*")
 //since asm was put into output, is it going toscrew the directory that BUSCO is looking in?
 """
-python /mnt/transient_nfs/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_BUSCO -l /mnt/transient_nfs/programs/busco/protists_ensembl -m tran -c 10
+python /mnt/wonderworld/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_BUSCO -l /mnt/wonderworld/programs/busco/protists_ensembl -m tran -c 10
 """
 
 }

@@ -99,7 +99,7 @@ def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib //
 			ref = open(nom + '_info.tsv' , 'r')
 			dataref = pandas.read_csv(ref, sep='\t')
 			for line in query: 
-				sane = len(dataref.rows)
+				sane = dataref.shape[0]
 				check = line.find('>') # check by line for > which designates start of fasta
 				if check != -1 and query != 0:
 					total += 1 # if > present, +1 to total
