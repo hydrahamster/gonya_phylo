@@ -8,7 +8,7 @@
  \usepackage{tabularx}
  \linespread{1.3}
  \usepackage{gensymb}
- \usepackage{longtable}
+\usepackage{longtable}
  \usepackage{lscape}
  \usepackage{url}
  \addtolength{\textwidth}{2cm}
@@ -62,73 +62,71 @@ The methodology to elucidate the evolution of the gonyaulacales is crucial. Prev
 \section{Materials and methods}
 
 \FloatBarrier
-\begin{table}
-\caption{Transcriptomes used for study along with taxonomic placement at family level and source. Family level placement derived from algaebase. MMETSP abbreviation for marine Microbial eukaryotic transcriptome sequencing project, by Moore Foundation.}
+\begin{longtable}{  | p{3cm} |p{4cm} | p{2cm} | p{3cm} | p{2cm} | p{2cm} |}
+\caption{Transcriptomes used for study along with taxonomic placement at family level and source. Family level placement derived from algaebase. MMETSP abbreviation for marine Microbial eukaryotic transcriptome sequencing project, by Moore Foundation.}\\
+\hline
 \label{tbl:Transcriptomes}
-\begin{tabular}{  | p{3cm} |p{4cm} | p{2cm} | p{3cm} | p{2cm} | p{2cm} | p{2cm} |}
+\textbf{Family}&\textbf{Species}&\textbf{Strain}&\textbf{ID}&\textbf{BUSCO single complete}&\textbf{Reference}\\
 \hline
-\textbf{Family}&\textbf{Species}&\textbf{Strain}&\textbf{ID}&\textbf{CEGMA score}&\textbf{BUSCO single complete}&\textbf{Reference}\\
-\hline
- \multicolumn{7}{| c |}{Gonyaulacales transcriptomes}\\
+ \multicolumn{6}{| c |}{Gonyaulacales transcriptomes}\\
     \hline
-   Ceratiaceae&\emph{Ceratium fusus}&PA161109 &MMETSP1074&79.44&202&\citep{keeling2014marine}\\
+   Ceratiaceae&\emph{Ceratium fusus}&PA161109 &MMETSP1074&202&\citep{keeling2014marine}\\
         \hline
-  Crypthecodiniaceae&\emph{Crypthecodinium cohnii}&Seligo&MMETSP0326\_2&83.87&202&\citep{keeling2014marine}\\
+  Crypthecodiniaceae&\emph{Crypthecodinium cohnii}&Seligo&MMETSP0326\_2&202&\citep{keeling2014marine}\\
         \hline
-    &\emph{Alexandrium catenella}&OF101&MMETSP0790&62.10&178&\citep{keeling2014marine}\\
+    &\emph{Alexandrium catenella}&OF101&MMETSP0790&178&\citep{keeling2014marine}\\
         \hline
-    &\emph{Alexandrium monilatum}&JR08&MMETSP0093&77.82&208&\citep{keeling2014marine}\\
+    &\emph{Alexandrium monilatum}&JR08&MMETSP0093&208&\citep{keeling2014marine}\\
         \hline
-&\emph{Pyrodinium bahamense}&pbaha01&MMETSP0796&79.84&197&\citep{keeling2014marine}\\
+&\emph{Pyrodinium bahamense}&pbaha01&MMETSP0796&197&\citep{keeling2014marine}\\
         \hline
-Gonyaulacaceae&\emph{Coolia malayensis}&&&&&\\
-&\emph{Gambierdiscus carpenteri}&&&&&\\
-&\emph{Gambierdiscus excentricus}&&&&&\\
+Gonyaulacaceae&\emph{Coolia malayensis}&&&&\\
+&\emph{Gambierdiscus carpenteri}&&&&\\
+&\emph{Gambierdiscus excentricus}&&&&\\
         \hline
-    &\emph{Gambierdiscus lapillus}&HG4&This study&85.08&227& \\
+    &\emph{Gambierdiscus lapillus}&HG4&This study&227& \\
         \hline
-            &\emph{Gambierdiscus polynesiensis}&CG14 really&This study&&& \\
+            &\emph{Gambierdiscus polynesiensis}&CG14 really&This study&& \\
         \hline
-    &\emph{Gambierdiscus} cf. \emph{silvae}&HG5&This study&77.42&215& \\
+    &\emph{Gambierdiscus} cf. \emph{silvae}&HG5&This study&215& \\
         \hline
-    &\emph{Gonyaulax spinifera}&CCMP409&MMETSP1439&67.34&131&\citep{keeling2014marine}\\
+    &\emph{Gonyaulax spinifera}&CCMP409&MMETSP1439&131&\citep{keeling2014marine}\\
         \hline
-    &\emph{Lingulodinium polyedra}&CCMP1738&MMETSP1032&77.82&209&\citep{keeling2014marine}\\
+    &\emph{Lingulodinium polyedra}&CCMP1738&MMETSP1032&209&\citep{keeling2014marine}\\
         \hline
-     &\emph{Ostreopsis ovata}&&&&&\\
+     &\emph{Ostreopsis ovata}&&&&\\
      \hline
-     &\emph{Ostreopsis rhodesae}&&&&&\\
+     &\emph{Ostreopsis rhodesae}&&&&\\
      \hline
-     &\emph{Ostreopsis siamensis}&&&&&\\
+     &\emph{Ostreopsis siamensis}&&&&\\
      \hline     
-Protoceratiaceae&\emph{Protoceratium reticulatum}&CCCM535=CCMP1889&MMETSP0228&61.69&176&\citep{keeling2014marine}\\
+Protoceratiaceae&\emph{Protoceratium reticulatum}&CCCM535=CCMP1889&MMETSP0228&176&\citep{keeling2014marine}\\
     \hline
- &\emph{Thecadinium kofoidii}&&&&&\\
+ &\emph{Thecadinium kofoidii}&&&&\\
  \hline
-    \multicolumn{7}{| c |}{Peridiniales transcriptomes}\\
+    \multicolumn{6}{| c |}{Peridiniales transcriptomes}\\
  \hline
- \multicolumn{7}{| c |}{Outgroup transcriptomes}\\
+ \multicolumn{6}{| c |}{Outgroup transcriptomes}\\
  \hline
-Dinophysiaceae&\emph{Dinophysis acimunata}&DAEP01&MMETSP0797&63.71&178&\citep{keeling2014marine}\\
+Dinophysiaceae&\emph{Dinophysis acimunata}&DAEP01&MMETSP0797&178&\citep{keeling2014marine}\\
         \hline
-Dinophyceae incertae sedis&\emph{Azadinium spinosum}&3D9&MMETSP1036\_2&80.65&193&\citep{keeling2014marine}\\
+Dinophyceae incertae sedis&\emph{Azadinium spinosum}&3D9&MMETSP1036\_2&193&\citep{keeling2014marine}\\
         \hline
-Gymnodiniales&\emph{Karenia brevis}&CCMP2229&MMETSP0030&80.65&184&\citep{keeling2014marine}\\
+Gymnodiniales&\emph{Karenia brevis}&CCMP2229&MMETSP0030&184&\citep{keeling2014marine}\\
     \hline
-    &\emph{Amphidinium massartii}&&&&&\\
-        &\emph{Durinskia baltica}&&&&&\\
+    &\emph{Amphidinium massartii}&&&&\\
+        &\emph{Durinskia baltica}&&&&\\
     \hline
-    &\emph{Peridinium aciculferum}&&&&&\\
-\end{tabular}
-\end{table}
+    &\emph{Peridinium aciculferum}&&&&\\
+\end{longtable}
+
 Azadinium Order Dinophyceae incerta sedis according to algaebase, gonyaulacales from NCBI taxonomy
 
 \FloatBarrier
-\begin{table}
-\caption{Transcriptomes used for study along with taxonomic placement at family level and source. Family level placement derived from algaebase. MMETSP abbreviation for marine Microbial eukaryotic transcriptome sequencing project, by Moore Foundation.}
-\label{tbl:Transcriptomes}
-\begin{tabular}{  | p{3cm} |p{4cm} | p{2cm} | p{3cm} | p{3cm}  |}
+\begin{longtable}{  | p{3cm} |p{4cm} | p{2cm} | p{3cm} | p{3cm}  |}
+\caption{Ribosomal sequences used for SSU and D1-D3 regions, with associated NCBI accession numbers.}\\
 \hline
+\label{tbl:rDNA}
 \textbf{Family}&\textbf{Species}&\textbf{ID}& \textbf{region} &\textbf{Comment}\\
 \hline
 \multicolumn{5}{| c |}{Gonyaulacales}\\
@@ -137,10 +135,9 @@ Ceratiaceae& Ceratium fusus&AF022153&SSU&\\
 \hline
 &Ceratium fusus&AF260390&D1-D3&\\
 \hline
-&Ceratium tripos&AF260389&D1-D3&Maybe Neoceratium or Tripos\\
-&Tripos longipes&DQ388462&SSU&ex Ceratium, ex Neoceratium - WORMS\\
+&Tripos longipes&AF260389&D1-D3&Maybe Neoceratium or Tripos\\
 \hline
-&Neoceratium platycorne&FJ824911&SSU&Fuck knows\\
+&Tripos longipes&DQ388462&SSU&ex Ceratium, ex Neoceratium - WORMS\\
 \hline
 Gonyaulacaceae&Amylax triacantha&AB375869&SSU&\\
 \hline
@@ -162,7 +159,7 @@ Ostreopsidaceae&\emph{Alexandrium catenella}&AB088238&D1-D2&\\
 \hline
 &\emph{Coolia malayensis}&KX589143&D1-D3&\\
 \hline
-&\emph{Coolia malayensis}&KU746833&SSU&\\
+&\emph{Coolia malayensis}&HQ897279&SSU&\\
 \hline
 &\emph{Gambierdiscus carpenteri}&EF202938&D1-D3 LSU&\\
 \hline
@@ -193,6 +190,8 @@ Ostreopsidaceae&\emph{Alexandrium catenella}&AB088238&D1-D2&\\
 &\emph{Ostreopsis siamensis}&KX055868&SSU&\\
 \hline
 &\emph{Pyrodinium bahamense}&AY456115&SSU&\\
+\hline
+&\emph{Pyrodinium bahamense}&AB936757&D1-D3&\\
 \hline
 Protoceratiaceae&Ceratocorys horrida&AF022154&SSU&\\
 \hline
@@ -249,8 +248,7 @@ Peridiniaceae&\emph{Peridinium aciculiferum}&HQ176321&D1-D3&\\
 \hline
 &\emph{Peridinium aciculiferum}&EF417315&SSU&\\
 \hline
-\end{tabular}
-\end{table}
+\end{longtable}
 
 \newpage
 \section{Results}
