@@ -67,18 +67,56 @@ def IDfasta(): # this one is so many ways fucked to sunday
 								fasta.write(linedup.strip()) 
 								fasta.write("\n")
 
-def hmmaln(): #use hmmer to extract correct ORF for fastafiles and align
+def hmmaln1(): #use hmmer to extract correct ORF for fastafiles and align
 	for file in glob('EP*.fasta'): #fasta files w all 6 ORFs of protein files
 		buscoID = file.split(".")[0] #get busco ID
 		with open(file, 'r'):
 #	for buscoID in buscscore:
 			search_cmd = "/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmsearch --tblout " + buscoID + ".tbl /mnt/wonderworld/programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + ".fasta"
 			index_cmd = "/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch --index " + buscoID + ".fasta"
-			extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | /mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
-			align_cmd = "/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa /mnt/wonderworld/programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"
+			extr_cmd = "grep -v \"^#\" " + buscoID + ".tbl | gawk \'{print $1}\' | /mnt/wonderworld/programs/Programs/hmmer-3.1b2-linux-intel-x86_64/binaries/esl-sfetch -f " + buscoID + ".fasta -> " + buscoID + "-seq.fa"""
 			os.system(search_cmd)
 			os.system(index_cmd) # make index for input file
 			os.system(extr_cmd) # use table to extract sequences with hits
+
+def sanitycheck():
+	with open('ref_transcriptomes.tsv' , 'w') as refout:
+		for file in glob('run*/full_table_*'):
+			nfile = file.split("/")[1]
+			sfile = nfile.split("_")[3]
+			refout.write('>'.strip())
+			refout.write(sfile.upper().strip())
+			refout.write("\n")
+	sourcet = open('ref_transcriptomes.tsv', 'r') #single ' or double " ?
+	colnames = ['a'] 
+	df = pandas.read_csv(sourcet, names=colnames) #colnames headers for df contruction
+	IDlist = df.a.tolist() #turn column a, protein IDs, into list
+	for file in glob('EP*-seq.fa'): # all new clean alignments
+		IDdict = {key: 0 for key in IDlist}
+		for eachkey in IDdict.keys():
+			with open(file , 'r') as query:
+				for line in query:
+					if line.find(eachkey) >= 0:
+						IDdict[eachkey] += 1
+						continue
+			query.close()
+		for entrydict in IDdict.items():
+			with open(file , 'a+') as queried:
+				if entrydict[1] == 2:
+					print '\n!!! ERROR - FIX BEFORE PROCEEDING !!!\n\n Duplicated taxon: ' + entrydict[0] + '\n In file:' + file + '\n\n'
+					raw_input('Fix Me! Done? Hit enter to proceed: ')
+				if entrydict[1] == 0:
+					queried.write(entrydict[0] + '_')
+					queried.write('\n')
+					queried.write('------------')
+				if entrydict[1] == 1:
+					continue
+
+def hmmaln2():
+	for file in glob('EP*-seq.fa'): #fasta files w all 6 ORFs of protein files
+		buscoID = file.split("-")[0] #get busco ID
+		with open(file, 'r'):
+			align_cmd = "/mnt/wonderworld/programs/hmmer-3.1b2-linux-intel-x86_64/binaries/hmmalign --outformat afa /home/nurgling/Programs/busco/protists_ensembl/hmms/" + buscoID + ".hmm " + buscoID + "-seq.fa > " + buscoID + ".aln.fa"	
 			os.system(align_cmd) # align extracted seqs to library file
 
 def cleanaln(): #uses whole seqs but only parts align to the refference hmmer lib. removing uncertain alignment (lowercase) and noise (*)
@@ -91,65 +129,18 @@ def cleanaln(): #uses whole seqs but only parts align to the refference hmmer li
 					linrepl = sub("\*" , '-' , linclean) #replace * with -
 					wut.write(linrepl.strip()) #write it
 					wut.write("\n")
-def sanitycheck(): #sometimes hmmer extracts seq with low affinity to ref lib // rewrite as target being number of lines in info file for the BUSCO
-	for file in glob('EP*.clean.aln.fa'): # all new clean alignments
-		with open(file , 'r') as query:
-			total = 0 #reset counter for every file
-			nom = file.split(".")[0]
-			ref = open(nom + '_info.tsv' , 'r')
-			dataref = pandas.read_csv(ref, sep='\t')
-			for line in query: 
-				sane = dataref.shape[0]
-				check = line.find('>') # check by line for > which designates start of fasta
-				if check != -1 and query != 0:
-					total += 1 # if > present, +1 to total
-			if total > sane: #insert number of transcriptomes here
-				print('\n\n    %%%%%%%%%%%%%%%%%%%%%%\n    %%\n    %% WARNING\n    %%\n    %% Hissy fit alignment\n    %%\n    %% ' + file + '    \n    %%\n    %%%%%%%%%%%%%%%%%%%%%\n\n') # if there is too many 
-			else:
-#				buscIDagain = file.split(".")[0]
-				jar_cmd = "java -jar /mnt/wonderworld/programs/readseq.jar -f17 " + file
-				os.system(jar_cmd)
 
-#def AAtag():
-#this is going to be function input:
-#(btables = for file in glob('run_*/translated_proteins/*.faa'): #looking through all sub directories )
-#	for file in glob('*.fasta'): #looking through all sub directories
-#		fie = file.split("/")[0]
-#		name = file.split("/")[2]
-#		nup = name.upper()
-#		sourcey = fie.split("_")[2] #pull contig IDs from file name
-#		upsourcey = sourcey.upper()
-#		with open(file, 'r') as inni:
-#			with open(upsourcey + '_' + nup, 'w') as outy:
-#				for line in inni:
-#					if '>' in line:
-#						lined = line.replace('>', '>' + upsourcey + '_')
-#						linedup = lined.upper()
-#						outy.write(linedup.strip())
-#						outy.write("\n")
-#					else:
-#						outy.write(line)
-#btables = glob('run_*/translated_proteins/*.faa')
-#fulltable =  glob('run_*/full_table_*')
+def nexusconv():
+	for file in glob('EP*.clean.aln.fa'):
+		jar_cmd = "java -jar /home/nurgling/Programs/readseq.jar -f17 " + file
+		os.system(jar_cmd)
+
+
 completequery()
 countBUSCOs()
 IDfasta()
-hmmaln()
-cleanaln()
+hmmaln1()
 sanitycheck()
-
-#AAtag()
-# what if I let the things run and do the AA tag of the output files only?
-
-#btables = glob('run_*/translated_proteins/*.faa') #input for AAtag
-#call AAtag
-
-#fulltable =  glob('full_table_*') #input completequery ~ need to fix file PATH
-#call completequery
-
-#sourcef = open('BUSCOs-complete-frag.tsv', 'r') #input countBUSCOs
-#call countBUSCOs
-
-#uniqueids = open('BUSCOs-unique-single.tsv', 'r') #arg1 ID-fasta
-#masterfile = open('BUSCOs-complete-frag.tsv', 'r') #arg2 ID-fasta
-#call ID-fasta
+hmmaln2()
+cleanaln()
+nexusconv()

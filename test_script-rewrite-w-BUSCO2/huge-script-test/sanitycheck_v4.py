@@ -10,15 +10,15 @@ for file in glob('EP*.clean.aln.fa'): # all new clean alignments
 		colnames = ['a'] 
 		df = pandas.read_csv(sourcet, names=colnames) #colnames headers for df contruction
 		IDlist = df.a.tolist() #turn column a, protein IDs, into list
-		IDdict = {key: 0 for key in IDlist}
-		for eachkey in IDdict.keys():
-			for line in query:
+		IDdict = {key: 0 for key in IDlist}	
+		for line in query:
+			for eachkey in IDdict.keys():
 				if line.find(eachkey):
 					IDdict[eachkey] =+ 1
 					continue
 			        else:
 					continue
-		print IDdict
+				print IDdict
 #		IDdict = defaultdict(int) #dictionatry type makes new key with entry 0 if not present yet an entry
 #		for thing in IDlist: #cycle though entries in ID list
 #			IDdict[thing] == 0 #+1 to value of the corresponding key from list
