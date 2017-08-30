@@ -16,14 +16,14 @@ Pipeline consists of two parts:
 - `something-else` can be any descriptor
 
 
-Software utilised as part of pepeline:
-Trimmomatic
-Trinity
-BUSCO2
-hmmer3
-Nextflow
-Diginorm
-Readseq
+Software utilised as part of pipeline:
+Trimmomatic\\
+Trinity\\
+BUSCO2\\
+hmmer3\\
+Nextflow\\
+Diginorm\\
+Readseq\\
 
 Programming language:
 Both parts of pipeline (will be) in Nextflow for compatibility with other clusters. Channels mostly written in Python 2.7
