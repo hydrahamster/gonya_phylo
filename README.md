@@ -17,13 +17,14 @@ Pipeline consists of two parts:
 
 
 Software utilised as part of pipeline:
-Trimmomatic\\
-Trinity\\
-BUSCO2\\
-hmmer3\\
-Nextflow\\
-Diginorm\\
-Readseq\\
+- Trimmomatic: Bolger et al. 2014 Bioinfo.
+- Trinity: Haas et al. 2013 Nat. Protoc.
+- BUSCO2: Simão et al. 2015 Bioinfo
+- hmmer3.1b2: Eddy et al. 2015 hmmer.org
+- Nextflow: info@nextflow.io
+- Diginorm as part of Khmer-protocols: Brown et al. 2013 http://dx.doi.org/10.6084/m9.figshare.878460
+- Readseq: Gilbert 2001 iubio.bio.indiana.edu/soft/molbio/readseq/
+- FastQC: Andrews 2010 bioinformatics.babraham.ac.uk/projects/fastqc
 
 Programming language:
 Both parts of pipeline (will be) in Nextflow for compatibility with other clusters. Channels mostly written in Python 2.7
