@@ -33,7 +33,7 @@ def countBUSCOs(): #extract the BUSCOs present in all transcriptomes, or pre-sel
 		for thing in IDlist: #cycle though entries in ID list
 			IDdict[thing] += 1 #+1 to value of the corresponding key from list
 		for entry in IDdict: #cycle through each key
-			if IDdict.get(entry) >= 15: #if value for each key is the same as target or higher
+			if IDdict.get(entry) >= 16: #if value for each key is the same as target or higher
 				prod.write(entry)
 				prod.write("\n") #next entry on new line
 
