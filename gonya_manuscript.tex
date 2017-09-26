@@ -19,8 +19,8 @@
  \addtolength{\voffset}{-1cm}
  \setlength{\parindent}{0pt}
  
-\title{Gonyalacales phylogeny. $^{1}$}
-\author{me}
+\title{Redefiition of the evolutionary relationships within the gonyaulacales - a case study for large data set processing. $^{1}$}
+\author{xx}
 \date{}
 
 \begin{document}
@@ -29,7 +29,7 @@
 Climate Change Cluster (C3), University of Technology Sydney, Ultimo, 2007 NSW, Australia, anna.kretzschmar@uts.edu.au
 \paragraph{}Aaron Darling \\
 Ithree institute (i3), University of Technology Sydney, Ultimo, 2007 NSW, Australia
-\paragraph{}MAthieu Fourment \\
+\paragraph{}Mathieu Fourment \\
 Ithree institute (i3), University of Technology Sydney, Ultimo, 2007 NSW, Australia
 \paragraph{}Shauna Murray\\ 
 Climate Change Cluster (C3), University of Technology Sydney, Ultimo, 2007 NSW, Australia
@@ -38,9 +38,10 @@ Climate Change Cluster (C3), University of Technology Sydney, Ultimo, 2007 NSW, 
 \newpage
 
 \section{Introduction}
-Dinoflagellates represent an ancient lineage of the eukaryotic branch of life. Elucidating the evolution of the dinoflagellates is key to answearing a number of questions. They play a role in several important ecological processes, as members are represented in both the marine and sweet water environments, where the cover a diverse nieches such as symbionts, parasites and harmful algal blooms.
 %protists and environmental importance
- The evolutionary relationship of the dinoflagellates is a key factor in determining how many key ehnvironemntal process came about, why/how their bizaare genetic structure came about and which traits are adaptive and which are involved in speciation. COuld I ta;k any more out of my arse? Probably not. 
+Dinoflagellates represent an ancient lineage of the eukaryotic branch of life. Elucidating the evolution of the dinoflagellates is key to answering a number of questions. They play a role in several important ecological processes, as members are represented in aquatic environments, where the cover a diverse niches such as symbionts, parasites and some taxa can cause harmful algal blooms.
+
+ The evolutionary relationship of the dinoflagellates is a key factor in determining how many key environmental process came about, why/how their bizaare genetic structure came about and which traits are adaptive and which are involved in speciation. COuld I ta;k any more out of my arse? Probably not. 
 Thus, the genetic structure of the dinoflagalates has been elucidated on several occasions, with various methods and degrees of success. --insert studies--
 Phylogenetic studies focusing on the dinoflagellates have frequently hit a roadblock on the order of the gonyaulacales. The problems with their analysis have been many fold, particlualry around long branch attraction and low node support. This is due to a number of factors, commonly incomplete lineage sorting and low node support. The low support values appear to be linked to the depth of the dataset, i.e. how many genes were included, as well as the methodology used. The incomplete lineage sorting is usually represented by long branches in the phylogeny, which is caused by sequence similarity between two unrelated taxa. Another factor could be the inclusion of homologs in the alignment.
 Several members are prolific neurotoxin producers and have been implicated in seafood intoxication. The neurotoxins enter the food chain as the protists are consumed, commonly along with the substrate they inhabitate, such as macroalgae, which are then passed from one vector to another to higher trophic levels till they reach humans. These single celled algae are the causative agent for many seafood related illnesses, such as ciguatera fish poisoning (CFP), diarrhetic shellfish poisoning (DSP) and paralytic shell fish poisoning (PSP).
@@ -151,6 +152,23 @@ Azadinium Order Dinophyceae incerta sedis according to algaebase, gonyaulacales 
 
 \newpage
 \section{Discussion}
+This study presents a pipeline designed to handle the identification of single copy genes in ordinarily difficult taxa, extracting and aligning single copy gene sequences and running phylogenetic inference. 
+Dinoflagellates are renowned for their large genomes and paralogy, which is why historically the evolutionary inference for them has been shithouse. With the recent completion and public availability of the MMETSP database, transcriptomes to investigate the evolutionary relationship for marine protists has become possible. And several studies have looked at the evolutionary relationships. While most clades of the dinoflagellates have been relatively well worked out, the gonyaulacales have been recalcitrant. So these have been of particular interest, especially as many of the taxa produce polyketide toxins that cause seafood intoxications globally. However, now that the transcriptomes are available, it's crucial to develop robust and reproducible methods to analyse the data
+\subsection*{Phylogeny}
+- differences between ML and BI analyses incl tanglegram
+- literature on concatenation problem, incl. BS misleading (Kubatko 07, Roche 15)
+- assembly diffs if transrate pans out
+- something about single copy genes for paralog riddled taxa
+
+\subsection*{Diff to previous gonyaulacales phylogenies}
+- commonly used/required databases for taxon classification by journals, eg algaebase, and how the families don't match phylo
+- Hoppenrath 17 suggesting reclassification as family 'asymetricomorpha' based on morphology, discuss differences and similarities
+- diff of phylo to species trees within genera, eg. Ostreopsis and Gamb SSU, usually based on rDNA ie. gene like rather than species evolution
+- Saldarriaga 04 \cite{saldarriaga2004molecular} SSU & LSU gene based. ERGH neighbourhood joining method. Table 2: Gonya res as per Fensome 93
+- Murray 05 \cite{murray2005improving} rDNA and only some gonya but looks like it meshes
+ -orr 12 \cite{orr2012naked} puts Crypthecodinium in the Peridiniales too (Fig4)
+ - SHALCHIAN-TABRIZI 06 \cite{shalchian2006combined} alsp places Crythecodinium in the Peridiniales(Fig 3)
+
 Good for discussing findings which are different to literature to date Arroyave '11 Phylogenetic relationships and the temporal context for the diversification
 of African characins of the family Alestidae (Ostariophysi: Characiformes): Evidence from DNA sequence data
 - Zhang 07 use SSU cox1 and cob but only one or two gonya
@@ -160,14 +178,9 @@ of African characins of the family Alestidae (Ostariophysi: Characiformes): Evid
 -price '17 talk about method problem
 - the big other paper that ignore Shauna's findings
 
-Other Gonya phylos.
-- Saldarriaga 04 \cite{saldarriaga2004molecular} SSU & LSU gene based. ERGH neighbourhood joining method. Table 2: Gonya res as per Fensome 93
-- Murray 05 \cite{murray2005improving} rDNA and only some gonya but looks like it meshes
- -orr 12 \cite{orr2012naked} puts Crypthecodinium in the Peridiniales too (Fig4)
- - SHALCHIAN-TABRIZI 06 \cite{shalchian2006combined} alsp places Crythecodinium in the Peridiniales(Fig 3)
 
-This study presents a pipeline designed to handle the identification of single copy genes in ordinarily difficult taxa, extracting and aligning single copy gene sequences and running phylogenetic inference. 
-Dinoflagellates are renowned for their large genomes and paralogy, which is why historically the evolutionary inference for them has been shithouse. With the recent completion and public availability of the MMETSP database, transcriptomes to investigate the evolutionary relationship for marine protists has become possible. And several studies have looked at the evolutionary relationships. While most clades of the dinoflagellates have been relatively well worked out, the gonyaulacales have been recalcitrant. So these have been of aprticular interet, especially as many of the taxa produce polyketide toxins that cause seafood intoxications globally. However, now that the transcriptomes are available, it's cruical to develop robust and reproducible methods to analyse the data
+
+
 
 \newpage
 \section{Conclusion}
