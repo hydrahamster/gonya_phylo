@@ -38,35 +38,27 @@ Climate Change Cluster (C3), University of Technology Sydney, Ultimo, 2007 NSW, 
 \newpage
 
 \section{Introduction}
-Advancement in next generation sequencing has heralded a new era for investigating the evolutionary relationships between organisms. The main focus has been on model organisms to infer the genetic make up of similar taxa. Model organisms are usually characterised by a reference genome and established protocols for working with. In the eukaryotic world, these well established model organisms only cover a predicted xx \% of known taxa. With the reduction in sequencing cost, increasingly large transcriptomic datasets are available for non-model organisms without reference genomes. Working with these taxa can pose obstacles for evolutionary inference when they do not satisfy the model selection or processing assumptions commonly attributed to model organisms. Frequent issues arise from:\
-1) Selection of paralogs. If genes with different evolutionary histories are selected, the gene tree will not reflect the history of either paralog and be nonsensical for species tree inference; 2) Concatenation of genes. Can be statistically inconsistent estimator of the species tree due to incomplete lineage sorting and concatenation acting as imperfect estimator of species tree topology \cite{roch2015likelihood}; and 3) Inference of model adequacy from bootstrap values. Kubatko et al. (2007) demonstrated high bootstrap support under maximum likelihood inference for incorrect species trees with concatenated gene sets as input \cite{kubatko2007inconsistency}. As high bootstrap values are often used as an indicator for robust species topology resolution, this fallacy is particularly problematic if the reader/operator is unfamiliar with the statistical phenomenon.\\
-In this study we aim to build a bioinformatic pipeline that addresses the issues of paralogy when processing transcriptomic data from non-model organisms, utilises alternative methods to both concatenation and maximum likelihood inference. Specifically, the pipeline assembles RNA seq datasets, identifies and extracts single copy genes across input taxa with extensive paralogy, and runs Bayesian inference phylogenetics. Further, to demonstrate decrease in inference run time on GPU vs. CPU. Finally, to validate the adequacy of the pipeline though application to the historically difficult order Gonyaulacales (phylum: Dinoflagellata) which are notorious for the issues that the pipeline seeks to address.
+Advancement in next generation sequencing has heralded a new era for investigating the evolutionary relationships between organisms. 
+The main focus has been on model organisms to infer the genetic make up of similar taxa. 
+Model organisms are usually characterised by a reference genome and established protocols for working with. 
+In the eukaryotic world, these well established model organisms only cover a predicted xx \% of known taxa. 
+With the reduction in sequencing cost, increasingly large transcriptomic datasets are available for non-model organisms without reference genomes. 
+Working with these taxa can pose obstacles for evolutionary inference when they do not satisfy the model selection or processing assumptions commonly attributed to model organisms. Frequent issues arise from:\
+1) Selection of paralogs. If genes with different evolutionary histories are selected, the gene tree will not reflect the history of either paralog and be nonsensical for species tree inference; 
+2) Concatenation of genes. Can be statistically inconsistent estimator of the species tree due to incomplete lineage sorting and concatenation acting as imperfect estimator of species tree topology \cite{roch2015likelihood}; and 
+3) Inference of model adequacy from bootstrap values. Kubatko et al. (2007) demonstrated high bootstrap support under maximum likelihood inference for incorrect species trees with concatenated gene sets as input \cite{kubatko2007inconsistency}. As high bootstrap values are often used as an indicator for robust species topology resolution, this fallacy is particularly problematic if the reader/operator is unfamiliar with the statistical phenomenon.\\
+In this study we aim to build a bioinformatic pipeline that attempts to addresses the issues of paralogy when processing transcriptomic data from non-model organisms, utilises alternative methods to both concatenation and maximum likelihood inference. 
+Specifically, the pipeline assembles RNA seq datasets, identifies and extracts single copy genes across input taxa with extensive paralogy, and runs Bayesian inference phylogenetics. 
+Finally, to apply the pipeline to the historically difficult order Gonyaulacales (phylum: Dinoflagellata) which are notorious for the issues that the pipeline seeks to address.\\
 
 %protists and environmental importance
-Dinoflagellates represent an ancient lineage on the eukaryotic branch of life. %Elucidating the evolution of the dinoflagellates is key to answering a number of questions. 
+Dinoflagellates represent an ancient lineage on the eukaryotic branch of life. 
 They play a role in several important ecological processes, as members are represented in aquatic environments, where the cover a diverse niches such as symbionts, parasites and some taxa can cause harmful algal blooms through proliferation and/or neurotoxin production.
-While the evolutionary relationship of most orders within the dinoflagellates has been estimated with reasonable certainty, one order has consistently escaped scrutiny - the gonyaulacales. Analyses for this order commonly combined concatenation and maximum likelihood approaches, which yielded long branch attraction, low confidence values and inconsistent taxon resolution. Improving upon the species the evolution of the gonyaulaceles has implications for environmental disease monitoring, as neurotoxin production is prevalent in this order. 
-%A common type of toxin found within the dinoflagellates, especially the gonyaulacales, are polyketides. 
+While the evolutionary relationship of most orders within the dinoflagellates has been estimated with reasonable certainty, one order has consistently escaped scrutiny - the gonyaulacales. 
+Analyses for this order commonly combined concatenation and maximum likelihood approaches, which yielded long branch attraction, low confidence values and inconsistent taxon resolution. 
+Improving upon the species the evolution of the gonyaulaceles has implications for environmental disease monitoring, as neurotoxin production is prevalent in this order. 
 Specifically the ciguatoxins produced by some \emph{Gambierdiscus} spp. are of interest as the causative agent of ciguatera fish poisoning, a neglected tropical disease with high associated morbidity.%, which is predicted to increase in prevalence with the advent of climate change.
 
-% The evolutionary relationship of the dinoflagellates is a key factor in determining how many key environmental process came about, why/how their bizaare genetic structure came about and which traits are adaptive and which are involved in speciation. COuld I ta;k any more out of my arse? Probably not. 
-%Thus, the genetic structure of the dinoflagalates has been elucidated on several occasions, with various methods and degrees of success. --insert studies--
-%Phylogenetic studies focusing on the dinoflagellates have frequently hit a roadblock on the order of the gonyaulacales. The problems with their analysis have been many fold, particlualry around long branch attraction and low node support. This is due to a number of factors, commonly incomplete lineage sorting and low node support. The low support values appear to be linked to the depth of the dataset, i.e. how many genes were included, as well as the methodology used. The incomplete lineage sorting is usually represented by long branches in the phylogeny, which is caused by sequence similarity between two unrelated taxa. Another factor could be the inclusion of homologs in the alignment.
-%Several members are prolific neurotoxin producers and have been implicated in seafood intoxication. The neurotoxins enter the food chain as the protists are consumed, commonly along with the substrate they inhabitate, such as macroalgae, which are then passed from one vector to another to higher trophic levels till they reach humans. These single celled algae are the causative agent for many seafood related illnesses, such as ciguatera fish poisoning (CFP), diarrhetic shellfish poisoning (DSP) and paralytic shell fish poisoning (PSP).
-
-%\emph{Alexandrium} and xx spp. produce saxitoxin, a trialkyl tetrahydropurine in structure, which is responsible for PSP. Murray et al. (2012) have demonstrated that the gene complex responsible for saxitoxin production derives from horizontal gene transfer (HGT) from cyanobacteria.
-
-
-%intro dinos and gonya within
-
-%weird genetics of dinos and why this has caused inability to place them correcly
-
-%discuss disagreement between authorities like ncbi and algaebase
-
-%previous studies in phylogenetics probelms incl incomplete lineage sorting 
-
-%adanvtage of *beast over other methods
-%The methodology to elucidate the evolution of the gonyaulacales is crucial. Previous studies have focused on multi gene concatenation. The problem with this approach is that it treats the genes examined as one long gene with congruent rate of evolution. However different genes evolve at different rates, i.e. can have a divergent evolutionary rate *cite Kubatko, Roche*. Especially long branch attraction is prone to overestimate the evolutionary relationship between taxa in a concatenated approach. Here we propose a novel approach to the problem in two ways : 1) by using the multi species coalescent approach in a Bayesian inference framework; 2) by using single copy genes to run the phylogenetic inference; 3) demonstrating reduced run time by using GPU rather than CPU.
 
 \newpage
 
