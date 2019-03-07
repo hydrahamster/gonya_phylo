@@ -4,11 +4,12 @@
  * 
  */
 
-params.fastqc = "path-fastqc" ${params.fastqc}
-params.trimmmomatic = ""
-params.trinity = ""
-params.busco = ""
-params.busc-ensemble = ""
+params.fastqcf = "path-fastqc" ${params.fastqc}
+params.fastqcr = "path-fastqc" 
+params.trimmmomatic = "path-trimmomatic-0.36.jar" ${params.trimmmomatic}
+params.trinity = "path-trinity" ${params.trinity}
+params.busco = "path-busco.py" ${params.busco}
+params.busc-ensemble = "path-ens" ${params.busc-ensemble}
 
 params.forward = ""
 params.revwerse = ""
@@ -31,7 +32,7 @@ output:
 file("${freads}_fastqc.html") into freadsfstcq 
 
 """
-/mnt/wonderworld/programs/FastQC/fastqc ${freads}
+${params.fastqcf} ${freads}
 mv *_fastqc/fastqc_report.html ${freads}_fastqc.html
 """
 
@@ -48,7 +49,7 @@ output:
 file("${rreads}_fastqc.html") into rreadsfstcq 
 
 """
-/mnt/wonderworld/programs/FastQC/fastqc ${rreads}
+${params.fastqcr} ${rreads}
 mv *_fastqc/fastqc_report.html ${rreads}_fastqc.html
 """
 
@@ -68,7 +69,7 @@ set file('*.forward_paired.fq.gz'),file('*.reverse_paired.fq.gz') into trimmedfq
 
 
 """
-java -jar /mnt/wonderworld/programs/trimmomatic-0.36.jar \
+java -jar ${params.trimmmomatic} \
 	PE -phred64 \
 	${freads} ${rreads} \
 	${freads}.forward_paired.fq.gz ${freads}.forward_unpaired.fq.gz \
@@ -89,10 +90,9 @@ output:
 file("${r1}-assembly.fasta") into asm
 
 """
-/mnt/wonderworld/programs/trinityrnaseq-Trinity-v2.4.0/Trinity --seqType fq --left ${r1} --right ${r2} --max_memory 50G --CPU 10 --output ./${r1}-out-fuckoff-trinity
+${params.trinity} --seqType fq --left ${r1} --right ${r2} --max_memory 50G --CPU 10 --output ./${r1}-out-fuckoff-trinity
 mv ${r1}-out-fuckoff-trinity/Trinity.fasta ${r1}-assembly.fasta
 """
-// is this move fucking up the asm channel?
 
 }
 
@@ -106,9 +106,8 @@ file assembly from asm
 output:
 file("full_table_*")
 file("short_summary_*")
-//since asm was put into output, is it going toscrew the directory that BUSCO is looking in?
 """
-python /mnt/wonderworld/programs/busco/BUSCO.py -i ${assembly} -o ${assembly}_BUSCO -l /mnt/wonderworld/programs/busco/protists_ensembl -m tran -c 10
+python ${params.busco} -i ${assembly} -o ${assembly}_BUSCO -l /${params.busc-ensemble} -m tran -c 10
 """
 
 }
