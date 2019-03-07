@@ -1,8 +1,14 @@
 #!/usr/bin/env nextflow
 /*
  * Usage: ./transcriptome-process.nf --forward=read1.fastq --revwerse=read2.fastq
+ * 
  */
 
+params.fastqc = "path-fastqc" ${params.fastqc}
+params.trimmmomatic = ""
+params.trinity = ""
+params.busco = ""
+params.busc-ensemble = ""
 
 params.forward = ""
 params.revwerse = ""
